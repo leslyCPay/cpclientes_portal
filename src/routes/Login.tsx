@@ -61,18 +61,18 @@ const Login: React.FC = () => {
 
   return (
     
-    <div className="login flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 text-black">
-      <div className='login-container bg-tussock-400' >
+    <div className="login flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 text-black ">
+      <div className='login-container bg-tussock-400 rounded-3xl' >
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">        
-          <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight ">
-            HomeOwners' Area Login
+          <h2 className="mt-10 text-center text-2xl/9 font-semibold tracking-wide ">
+            Home Owners' Area Login
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm/6 font-medium text-tussock-500">
+              <label htmlFor="email" className="block text-sm/6 font-medium text-neutral-900">
                 Email address
               </label>
               <div className="mt-2">
@@ -84,18 +84,18 @@ const Login: React.FC = () => {
                   placeholder='Please enter your registered email'
                   value={formData.username}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-tussock-500 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 pl-2"
+                  className="block w-full rounded-md border-0 py-1.5 text-tussock-500 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm/6 pl-2"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm/6 font-medium text-tussock-500">
+                <label htmlFor="password" className="block text-sm/6 font-medium text-neutral-900">
                   Password
                 </label>
                 <div className="text-sm">
-                  <a href="#" className="font-semibold text-tussock-600 hover:text-tussock-300">
+                  <a href="#" className="font-semibold text-tussock-600 hover:text-tussock-500">
                     Forgot password?
                   </a>
                 </div>
@@ -110,7 +110,7 @@ const Login: React.FC = () => {
                   placeholder='Password'
                   value={formData.password}
                   onChange={handleChange}                  
-                  className="block w-full rounded-md border-0 py-1.5 text-tussock-500 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tussock-600 sm:text-sm/6 pl-2"
+                  className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm/6 pl-2"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
               {errorMessage && <p className="error">{errorMessage}</p>}
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-tussock-400 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-tussock-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tussock-600"
+                className="flex w-full justify-center rounded-full bg-neutral-900 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-neutral-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tussock-600"
               >
                 Sign in
               </button>              

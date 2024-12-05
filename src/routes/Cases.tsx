@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import CaseInformation from '../components/CaseInformation';
 import { useLocation } from 'react-router-dom';
+import Loader from '../components/Loader';
+const logOut = () => setIsLoggedIn(false);
 
 // Definimos los tipos para los datos que esperamos de la API
 interface ApiResponse {  
@@ -22,7 +24,7 @@ const Cases: React.FC= () => {
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const { email } = location.state || {};
-  
+
 
   // Función que maneja la solicitud a la API
   const fetchData = async () => {
@@ -73,32 +75,44 @@ const Cases: React.FC= () => {
 
   return (
     
-    <div className='cases-list' >
-      {loading && <p>Loding...</p>}
-      {error && <p>{error}</p>}
-      <h2 className='mt-5 text-left text-2xl/9 font-bold tracking-tight text-gray-900 pl-8'  >List of Cases</h2>
-   
-       <section className="container mx-auto p-6 font-mono">
-        <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full">
-              <thead>         
-                <tr className="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                  <th className="px-4 py-3">CASE ID</th>
-                  <th className="px-4 py-3">CLAIM NUMBER</th>
-                  <th className="px-4 py-3">CASE STATUS</th>                  
-                  <th className="px-4 py-3">ACTIONS</th>
-                </tr>
+    <div className='cases-list bg-amber-100 flex min-h-screen'  >  
+       <section className="container mx-auto p-6 font-questrial">
+        <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5md lg:text-6md dark:text-white">List of <span className="underline underline-offset-3 decoration-8 decoration-tussock-400 dark:decoration-tussock-600">Cases</span></h2>
+        <p className="text-md font-normal text-gray-500 lg:text-md dark:text-gray-400 mb-5">All of these cases are with us.</p>
+        <div>
+          {loading && <Loader />}
+          {error && <p>{error}</p>}
+        </div>
+        <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-5" >
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
+              <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
+                  <tr>
+                      <th scope="col" className="px-6 py-3">
+                          Case ID
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                          Claim Number
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                          Case Status
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                          Action
+                      </th>
+                  </tr>
               </thead>
               <tbody>
-              {data.map(item=>(
-                <CaseInformation key={item.id}  arepons={item} />
-              ))}            
+                    {data.map(item=>(
+                      <CaseInformation key={item.id}  arepons={item} />
+                    ))}            
               </tbody>                
             </table>
           </div>
         </div>
       </section>
+
+
 
     </div>
   );
@@ -106,7 +120,10 @@ const Cases: React.FC= () => {
 
 export default Cases;
 
-/*function setIsLoggedIn(arg0: boolean) {
+function setIsLoggedIn(arg0: boolean) {
   throw new Error('Function not implemented.');
-}*/
+}
+
+
+
 
