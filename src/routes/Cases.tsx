@@ -3,7 +3,6 @@ import axios from 'axios';
 import CaseInformation from '../components/CaseInformation';
 import { useLocation } from 'react-router-dom';
 import Loader from '../components/Loader';
-const logOut = () => setIsLoggedIn(false);
 
 // Definimos los tipos para los datos que esperamos de la API
 interface ApiResponse {  
@@ -40,8 +39,6 @@ const Cases: React.FC= () => {
       
       const names = nameResponse.data;
       
-      console.log(names);
-      
       // Hacemos la solicitud a la API de Cases por nombre
       await axios
       .get<ApiResponse[]>(`/api/cases?names=${names}`) // API de prueba
@@ -76,39 +73,39 @@ const Cases: React.FC= () => {
   return (
     
     <div className='cases-list bg-amber-100 flex min-h-screen'  >  
-       <section className="container mx-auto p-6 font-questrial">
+       <section className="container mx-auto p-6 font-questrial min-h-full">
         <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5md lg:text-6md dark:text-white">List of <span className="underline underline-offset-3 decoration-8 decoration-tussock-400 dark:decoration-tussock-600">Cases</span></h2>
-        <p className="text-md font-normal text-gray-500 lg:text-md dark:text-gray-400 mb-5">All of these cases are with us.</p>
+        {/* <p className="text-md font-normal text-gray-500 lg:text-md dark:text-gray-400 mb-5">All of these cases are with us.</p> */}
         <div>
           {loading && <Loader />}
           {error && <p>{error}</p>}
         </div>
         <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-5" >
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
-              <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
-                  <tr>
-                      <th scope="col" className="px-6 py-3">
-                          Case ID
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                          Claim Number
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                          Case Status
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                          Action
-                      </th>
-                  </tr>
-              </thead>
-              <tbody>
-                    {data.map(item=>(
-                      <CaseInformation key={item.id}  arepons={item} />
-                    ))}            
-              </tbody>                
-            </table>
-          </div>
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+              <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
+                <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
+                    <tr>
+                        <th scope="col" className="px-6 py-3">
+                            Case ID
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                            Claim Number
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                            Case Status
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                      {data.map(item=>(
+                        <CaseInformation key={item.id}  arepons={item} />
+                      ))}            
+                </tbody>                
+              </table>
+            </div>
         </div>
       </section>
 
@@ -120,9 +117,9 @@ const Cases: React.FC= () => {
 
 export default Cases;
 
-function setIsLoggedIn(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
+// function setIsLoggedIn(arg0: boolean) {
+//   throw new Error('Function not implemented.');
+// }
 
 
 

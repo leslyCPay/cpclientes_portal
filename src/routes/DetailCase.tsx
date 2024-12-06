@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'; 
-import { useParams, Link } from 'react-router-dom'; 
+import { useParams, Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import Loader from '../components/Loader';
 
@@ -7,6 +7,11 @@ import Loader from '../components/Loader';
 const DetailCase: React.FC = () => {
     const { caseId } = useParams<{ caseId: string }>(); 
     const [caseDetails, setCaseDetails] = useState<any>(null);
+    const navigate = useNavigate();
+
+    const handleBackButtonClick = () => {
+        navigate(-1); // Navigate one step back in history
+    };
     
     useEffect(() => { 
         const fetchCaseDetails = async () => { 
@@ -18,37 +23,17 @@ const DetailCase: React.FC = () => {
             } }; fetchCaseDetails(); 
         }, [caseId]);
     
-
-    function newcaseDetails(def:any) {        
-    
-        const [array, setArray] = useState(def);
-
-        const removeElements = (valuesToRemove: string[]) => {
-            const newArray = array.filter((item:string) => !valuesToRemove.includes(item));
-            setArray(newArray);
-        };
-    
-        const handleRemove = () => {
-            // Specify the values you want to remove
-            const valuesToRemove = ["banana", "date"];
-            removeElements(valuesToRemove);
-        };
-        handleRemove();
-        return array;
-
-    }
-
      
     return(
         
      <div className="h-full w-full ">       
             
-            <div className="container mx-auto min-h-full">
+            <div className="container mx-auto min-h-screen">
                     <div >
                         <nav className="flex bg-gray-50 text-tussock-600 border border-gray-200 py-3 px-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" aria-label="Breadcrumb">
                         <ol className="inline-flex items-center space-x-1 md:space-x-3">
                             <li className="inline-flex items-center">
-                            <a href="#" className="text-sm text-tussock-600 hover:text-tussock-900 inline-flex items-center dark:text-gray-400 dark:hover:text-white">
+                            <a onClick={handleBackButtonClick} className="text-sm text-tussock-600 hover:text-tussock-900 inline-flex items-center dark:text-gray-400 dark:hover:text-white">
                                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                                 Home
                             </a>
@@ -56,8 +41,7 @@ const DetailCase: React.FC = () => {
                             <li>
                             <div className="flex items-center">
                                 <svg className="w-6 h-6 text-tussock-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                                <a href="" className="text-tussock-500 hover:text-gray-900 ml-1 md:ml-2 text-sm font-medium dark:text-gray-400 dark:hover:text-white">Cases</a>
-                                <Link to="/cases">Cases</Link>
+                                <a onClick={handleBackButtonClick} className="text-tussock-500 hover:text-gray-900 ml-1 md:ml-2 text-sm font-medium dark:text-gray-400 dark:hover:text-white">Cases</a>                               
                             </div>
                             </li>
                             <li aria-current="page">
@@ -115,34 +99,7 @@ const DetailCase: React.FC = () => {
                     </div>
              
 
-
-
-
-
-
-
-                {/* <div className="flex flex-col justify-center items-center h-[100vh]">
-                    <div className="relative flex flex-col items-center rounded-[20px] w-[1200px] max-w-[95%] mx-auto bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none p-3">
-                        {caseDetails? (
-                        <div className="grid grid-cols-8 gap-4 px-2 w-full">
-                            {Object.keys(caseDetails).map((key, index) => (                        
-                                
-                                <div key={index} className="flex flex-col items-start justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-                                    <p className="text-sm text-gray-600">{key}</p>
-                                    <p className="text-base font-medium text-navy-700 dark:text-white">
-                                        {caseDetails[key]}
-                                    </p>
-                                </div>
-                            ))}
-                            
-                        </div>
-                        ): ( <Loader /> )}
-                    </div>  
-                </div> */}
-
-                <div className="flex flex-col gap-4 mt-4 min-h-full">
-
-                        
+                <div className="flex flex-col gap-4 mt-4 min-h-full">                       
 
                     <div className="relative m-auto  px-6 py-4 w-full max-w-6xl bg-white shadow border-t-4 border-amber-600 rounded min-h-full" >
                        {caseDetails? (  
@@ -152,7 +109,7 @@ const DetailCase: React.FC = () => {
                         <div className="w-full grid grid-cols-4 pt-4" >                       
                             {Object.keys(caseDetails).map((key, index) => (                                
                                 <div className='text-base leading-8 py-4' key={index}>
-                                    <p className='text-xs font-semibold text-amber-700 uppercase'>{key}</p>
+                                    <p className='text-xs font-semibold text-amber-700 uppercase'>{key.replace(/_/g, " ")}</p>
                                     <p  className='text-md text-gray-500'> {caseDetails[key]}</p>
                                 </div>
                             ))}             
@@ -173,6 +130,5 @@ const DetailCase: React.FC = () => {
     );
 
 }
-
 
 export default DetailCase;

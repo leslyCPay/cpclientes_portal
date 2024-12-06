@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/Login.css';
+import { ClipLoader } from 'react-spinners';
 
 // Definimos los tipos para los estados
 interface LoginFormState {
@@ -15,7 +16,9 @@ const Login: React.FC = () => {
     username: '',
     password: '',
   });
+  const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showError, setShowError] = useState<boolean>(false); 
   const navigate = useNavigate();
 
   // Manejador del formulario
@@ -25,27 +28,28 @@ const Login: React.FC = () => {
     const email:string = formData.username;
     const password:string = formData.password;
 
+    setLoading(true);
+
       try { 
 
         const response = await axios.post('/api/login', { email, password, }); 
         const { access_token } = response.data;
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('email', email); 
-        navigate('/cases', { state: { email } });
+       
         // Redirect or update UI on successful login
-        window.location.href = '/cases'; 
+        navigate('/cases', { state: { email } });
+
       } catch (err) { 
-        setErrorMessage('Invalid login credentials'); 
-      } 
-
-    // Validación simple de usuario y contraseña
-    /*if (formData.username === 'admin' && formData.password === '1234') {
-      setErrorMessage('');
-      window.location.href = '/cases';      
-    } else {
-      setErrorMessage('User or Password wrong');
-    }*/
-
+        setErrorMessage('Invalid login credentials');
+        setShowError(true); // Mostrar el mensaje de error 
+        // Ocultar el mensaje de error después de 3 segundos 
+        setTimeout(() => { 
+          setShowError(false); 
+        }, 5000); 
+      } finally{
+        setLoading(false);
+      }
 
   };
 
@@ -112,11 +116,11 @@ const Login: React.FC = () => {
                   onChange={handleChange}                  
                   className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm/6 pl-2"
                 />
+                {showError && <p className="error">{errorMessage}</p>}
               </div>
             </div>
 
-            <div>
-              {errorMessage && <p className="error">{errorMessage}</p>}
+            <div>            
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-full bg-neutral-900 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-neutral-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tussock-600"
@@ -125,7 +129,11 @@ const Login: React.FC = () => {
               </button>              
             </div>
           </form>
-
+          {loading && ( 
+            <div className="flex justify-center mt-4"> 
+              <ClipLoader size={35} color={"#000000"} loading={loading} /> 
+            </div> 
+          )}
           <p className="mt-10 text-center text-sm/6 text-tussock-200">
             Not a register yet?{' '}
             <a href="#" className="font-semibold text-tussock-600 hover:text-tussock-500">

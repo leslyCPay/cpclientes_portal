@@ -29,6 +29,8 @@
 .error {
   color: red;
   font-size: 12px;
+  font-family: "Questrial", sans-serif;
+  animation: fadeOut 5s forwards;
 }
 
 button {
@@ -56,3 +58,5 @@ button:hover {
     /* padding-bottom: 15em;*/
   }
 }
+
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
