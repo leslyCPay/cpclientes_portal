@@ -1,29 +1,21 @@
-# Usa la imagen base de Node.js para construir la aplicación
-FROM node:20 AS build
+# Usa la imagen base de Node.js
+FROM node:20
 
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copia los archivos de configuración de dependencias
+# Copia los archivos de package.json y package-lock.json
 COPY package*.json ./
 
-# Limpia el caché de npm e instala las dependencias
+# Limpia el caché de npm e instala las dependencias del proyecto
 RUN npm cache clean --force && npm install
 
-# Copia el resto del código de la aplicación
+# Copia el resto de los archivos de la aplicación
 COPY . .
 
-# Construye la aplicación para producción
-RUN npm run build
-
-# Usa una imagen base de servidor web ligero (Nginx) para servir la aplicación
-FROM nginx:stable-alpine
-
-# Copia los archivos generados por React (carpeta build) al directorio predeterminado de Nginx
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
-
-# Exponemos el puerto 80 para HTTP
+# Expone el puerto en el que correrá la aplicación
 EXPOSE 80
 
-# Comando por defecto para iniciar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+
+# Comando para iniciar la aplicación, asegurando que el host esté configurado para aceptar conexiones externas
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
