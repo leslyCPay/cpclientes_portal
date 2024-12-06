@@ -1,32 +1,29 @@
-# Usa la imagen base de Node.js
-FROM node:20
+# Usa la imagen base de Node.js para construir la aplicación
+FROM node:20 AS build
 
-# Add this line to set the ServerName directive
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# Establece el directorio de trabajo
+WORKDIR /usr/src/app
 
-# Copiamos los archivos de la aplicación a la imagen
-COPY . /var/www/html
-
-# Copiar el archivo de configuración de Apache
-COPY apache.conf /etc/apache2/sites-available/000-default.conf
-
-
-# Cambiar los permisos de los archivos y directorios de Laravel
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html/storage
-
-# Establecemos el directorio de trabajo
-WORKDIR /var/www/html
-
-# Copia los archivos de package.json y package-lock.json
+# Copia los archivos de configuración de dependencias
 COPY package*.json ./
 
-# Limpia el caché de npm e instala las dependencias del proyecto
+# Limpia el caché de npm e instala las dependencias
 RUN npm cache clean --force && npm install
 
-# Expone el puerto en el que correrá la aplicación
+# Copia el resto del código de la aplicación
+COPY . .
+
+# Construye la aplicación para producción
+RUN npm run build
+
+# Usa una imagen base de servidor web ligero (Nginx) para servir la aplicación
+FROM nginx:stable-alpine
+
+# Copia los archivos generados por React (carpeta build) al directorio predeterminado de Nginx
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
+
+# Exponemos el puerto 80 para HTTP
 EXPOSE 80
 
-
-# Comando para iniciar la aplicación, asegurando que el host esté configurado para aceptar conexiones externas
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Comando por defecto para iniciar Nginx
+CMD ["nginx", "-g", "daemon off;"]
