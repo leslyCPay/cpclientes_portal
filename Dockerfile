@@ -1,6 +1,9 @@
 # Usa la imagen base de Node.js
 FROM node:20
 
+# Add this line to set the ServerName directive
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Copiamos los archivos de la aplicación a la imagen
 COPY . /var/www/html
 
