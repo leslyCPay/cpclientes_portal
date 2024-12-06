@@ -16,7 +16,7 @@ const AppRoutes: React.FC = () => {
   }, [isLoggedIn]);
 
   
-  //const logIn = () => setIsLoggedIn(true);
+  const logIn = () => setIsLoggedIn(true);
 
   // pass this callback to components you want to allow logging out
   // it will update the local state and then get persisted
