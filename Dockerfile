@@ -1,6 +1,9 @@
 # Usa la imagen base de Node.js
 FROM node:20
 
+# Copiamos los archivos de la aplicación a la imagen
+COPY . /var/www/html
+
 # Copiar el archivo de configuración de Apache
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
@@ -17,9 +20,6 @@ COPY package*.json ./
 
 # Limpia el caché de npm e instala las dependencias del proyecto
 RUN npm cache clean --force && npm install
-
-# Copia el resto de los archivos de la aplicación
-COPY . .
 
 # Expone el puerto en el que correrá la aplicación
 EXPOSE 80
