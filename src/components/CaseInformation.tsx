@@ -14,8 +14,7 @@ const CaseInformation: React.FC<{arepons:Props}> = ({arepons}) => {
         navigate(`/detail-case/${caseId}`); 
     };    
 
-    return (             
-
+    return (    
             <tr className="bg-tussock-300 border-b border-tussock-500">
                 {Object.entries(arepons).map(([key, value]) => (        
                     <td scope="row" className="px-6 py-4 font-medium text-blue-50 whitespace-nowrap dark:text-blue-100" key={key} >{value}</td> 
