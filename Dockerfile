@@ -35,5 +35,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Exponemos el puerto 443 para HTTPS y 80 para HTTP
 EXPOSE 443 80
 
+
 # Comando por defecto para iniciar Nginx
 CMD ["nginx", "-g", "daemon off;"]     
