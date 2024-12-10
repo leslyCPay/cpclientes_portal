@@ -17,7 +17,7 @@ COPY . .
 RUN npx vite build
 
 # Usa una imagen base de servidor web ligero (Nginx) para servir la aplicación
-#FROM nginx:stable-alpine
+FROM nginx:stable-alpine
 
 # Copia los archivos generados por React (carpeta build) al directorio predeterminado de Nginx
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
