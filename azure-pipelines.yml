@@ -34,7 +34,6 @@ steps:
     tags: '$(Build.BuildId)'
     displayName: 'Docker Build'
 
-
 - task: Docker@2
   inputs:
     repository: 'clients_portal_frontend'
