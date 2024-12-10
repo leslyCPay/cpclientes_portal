@@ -14,7 +14,7 @@ RUN npm cache clean --force && npm install
 COPY . .
 
 # Construye la aplicación para producción
-RUN npx vite builda
+RUN npx vite build
 
 # Usa una imagen base de servidor web ligero (Nginx) para servir la aplicación
 FROM nginx:stable-alpine
@@ -34,7 +34,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Exponemos el puerto 443 para HTTPS y 80 para HTTP
 EXPOSE 443 80
-
 
 # Comando por defecto para iniciar Nginx
 CMD ["nginx", "-g", "daemon off;"]     
