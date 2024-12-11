@@ -32,7 +32,7 @@ const Cases: React.FC= () => {
     try {
 
       // First API call to get names using the email 
-      const nameResponse = await axios.get<NameResponse>(`${import.meta.env.VITE_BACK_URL}/api/emailInsured?email=${email}`, {
+      const nameResponse = await axios.get<NameResponse>(`https://itlportaldevback.claimpay.net/api/emailInsured?email=${email}`, {
          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } 
       }); 
       
@@ -40,7 +40,7 @@ const Cases: React.FC= () => {
       
       // Hacemos la solicitud a la API de Cases por nombre
       await axios
-      .get<ApiResponse[]>(`/api/cases?names=${names}`) // API de prueba
+      .get<ApiResponse[]>(`https://itlportaldevback.claimpay.net/api/cases?names=${names}`) // API de prueba
       .then((response) => {         
         var res = response.data;
         var obj = Object.values(res);

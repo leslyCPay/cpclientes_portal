@@ -32,7 +32,7 @@ const Login: React.FC = () => {
 
       try { 
 
-        const response = await axios.post('/api/login', { email, password, }); 
+        const response = await axios.post('https://itlportaldev.claimpay.net/api/login', { email, password, }); 
         const { access_token } = response.data;
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('email', email); 
