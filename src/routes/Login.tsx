@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/Login.css';
 import { ClipLoader } from 'react-spinners';
-
+import BASE_URL from '../config'; // Import the base URL
 // Definimos los tipos para los estados
 interface LoginFormState {
   username: string;
@@ -32,7 +32,7 @@ const Login: React.FC = () => {
 
       try { 
 
-        const response = await axios.post('https://itlportaldevback.claimpay.net/api/login', { email, password, }); 
+        const response = await axios.post(`${BASE_URL}/api/login`, { email, password, }); 
         const { access_token } = response.data;
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('email', email); 

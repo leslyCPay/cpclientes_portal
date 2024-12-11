@@ -3,6 +3,7 @@ import axios from 'axios';
 import CaseInformation from '../components/CaseInformation';
 import { useLocation } from 'react-router-dom';
 import Loader from '../components/Loader';
+import BASE_URL from '../config'; // Import the base URL
 // Definimos los tipos para los datos que esperamos de la API
 interface ApiResponse {  
   id: number;
@@ -32,7 +33,7 @@ const Cases: React.FC= () => {
     try {
 
       // First API call to get names using the email 
-      const nameResponse = await axios.get<NameResponse>(`https://itlportaldevback.claimpay.net/api/emailInsured?email=${email}`, {
+      const nameResponse = await axios.get<NameResponse>(`${BASE_URL}/api/emailInsured?email=${email}`, {
          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } 
       }); 
       
@@ -40,7 +41,7 @@ const Cases: React.FC= () => {
       
       // Hacemos la solicitud a la API de Cases por nombre
       await axios
-      .get<ApiResponse[]>(`https://itlportaldevback.claimpay.net/api/cases?names=${names}`) // API de prueba
+      .get<ApiResponse[]>(`${BASE_URL}/api/cases?names=${names}`) // API de prueba
       .then((response) => {         
         var res = response.data;
         var obj = Object.values(res);

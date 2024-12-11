@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import Loader from '../components/Loader';
+import BASE_URL from '../config'; // Import the base URL
 
 
 const DetailCase: React.FC = () => {
@@ -16,7 +17,7 @@ const DetailCase: React.FC = () => {
     useEffect(() => { 
         const fetchCaseDetails = async () => { 
             try { 
-                const response = await axios.get(`/api/details?case_id=${caseId}`); 
+                const response = await axios.get(`${BASE_URL}/api/details?case_id=${caseId}`); 
                 setCaseDetails(response.data); 
             } catch (error) { console.error('Error fetching case details:', error); 
 
