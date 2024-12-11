@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   server:{
     proxy:{
-      '/api':'https://itlportaldev.claimpay.net'
+      '/api':'https://itlportaldevback.claimpay.net'
     }
   },
   plugins: [react()]
