@@ -3,7 +3,6 @@ import axios from 'axios';
 import CaseInformation from '../components/CaseInformation';
 import { useLocation } from 'react-router-dom';
 import Loader from '../components/Loader';
-
 // Definimos los tipos para los datos que esperamos de la API
 interface ApiResponse {  
   id: number;
@@ -33,7 +32,7 @@ const Cases: React.FC= () => {
     try {
 
       // First API call to get names using the email 
-      const nameResponse = await axios.get<NameResponse>(`/api/emailInsured?email=${email}`, {
+      const nameResponse = await axios.get<NameResponse>(`${import.meta.env.VITE_BACK_URL}/api/emailInsured?email=${email}`, {
          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } 
       }); 
       
