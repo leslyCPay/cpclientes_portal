@@ -41,7 +41,7 @@ const Cases: React.FC= () => {
       
       // Hacemos la solicitud a la API de Cases por nombre
       await axios
-      .get<ApiResponse[]>(`${BASE_URL}/api/cases?names=${names}`) // API de prueba
+      .get<ApiResponse[]>(`${BASE_URL}/api/cases?names=Samar Chakar`) // API de prueba
       .then((response) => {         
         var res = response.data;
         var obj = Object.values(res);

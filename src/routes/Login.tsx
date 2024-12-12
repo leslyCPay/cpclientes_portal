@@ -20,6 +20,10 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showError, setShowError] = useState<boolean>(false); 
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
+    () => localStorage.getItem('logged_user') !== null
+  );
+  
 
   // Manejador del formulario
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,15 +31,18 @@ const Login: React.FC = () => {
 
     const email:string = formData.username;
     const password:string = formData.password;
+   
 
     setLoading(true);
 
       try { 
-
         const response = await axios.post(`${BASE_URL}/api/login`, { email, password, }); 
         const { access_token } = response.data;
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('email', email); 
+        localStorage.setItem('logged_user', 'true');
+        const logIn = () => setIsLoggedIn(true);
+
        
         // Redirect or update UI on successful login
         navigate('/cases', { state: { email } });
