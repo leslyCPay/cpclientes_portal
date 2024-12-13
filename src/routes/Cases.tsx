@@ -10,11 +10,23 @@ interface ApiResponse {
   case_id: string;
   case_number: string;
   claim_number: string;
-}[];
+};
 
 interface NameResponse { 
-  names: string; 
-}
+  names: string[]; 
+};
+
+// Define types for successful and failed responses 
+interface SuccessfulResponse { 
+  data: ApiResponse[];
+} 
+
+interface FailedResponse { 
+  error: any; 
+  name: string; 
+} 
+
+type Response = SuccessfulResponse | FailedResponse;
 
 
 const Cases: React.FC= () => {
@@ -23,6 +35,10 @@ const Cases: React.FC= () => {
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const { email } = location.state || {};
+
+  const isFailedResponse = (response: Response): response is FailedResponse => { 
+    return 'error' in response; 
+  };
 
 
   // Función que maneja la solicitud a la API
@@ -37,40 +53,51 @@ const Cases: React.FC= () => {
          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } 
       }); 
       
-      const names = nameResponse.data;
+      const names = nameResponse.data; 
+
+      if (!Array.isArray(names)) { 
+        throw new Error('Expected an array of names'); 
+      }
+
+      const requests = names.map((name) => { 
+        const url = `${BASE_URL}/api/cases?names=${name}`;
+        return axios.get<ApiResponse[]>(url, { 
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }, 
+        })
+        .then(response => ({ 
+          data: response.data 
+        }))
+        .catch(error => ({ 
+          error, name
+        }));
+
+      }); 
+      const responses = await Promise.all(requests); 
+   
+      const successfulResponses = responses.filter((response): response is SuccessfulResponse => !isFailedResponse(response)); 
+      const allData = successfulResponses.flatMap(response => Object.values(response.data)); 
+      setData(allData);
+      const failedResponses = responses.filter(isFailedResponse); 
+      if (failedResponses.length) { 
+        //setError(`Failed to fetch data for names: ${failedResponses.map(fr => fr.name).join(', ')}`);
+      }
       
-      // Hacemos la solicitud a la API de Cases por nombre
-      await axios
-      .get<ApiResponse[]>(`${BASE_URL}/api/cases?names=Samar Chakar`) // API de prueba
-      .then((response) => {         
-        var res = response.data;
-        var obj = Object.values(res);
-        setData(obj);
-        setLoading(false);        
-      })
-      .catch(() => {
-        setError('Hubo un error al cargar los datos.');       
-      })
-      .finally(()=>{
-        setLoading(false);
-      });
-
-
 
     } catch (error) {
       console.error('Error fetching cases:', error); 
       setError('Failed to fetch cases.');
+    }finally{
+      setLoading(false);
     }
 
   };
 
-  console.log(data ? data:"Fetching data ...")
   useEffect(()=>{
     fetchData();
   },[]);
-
-
+  
   return (
+    
     
     <div className='cases-list bg-amber-100 flex min-h-screen'  >  
        <section className="container mx-auto p-6 font-questrial min-h-full">
@@ -80,7 +107,7 @@ const Cases: React.FC= () => {
           {loading && <Loader />}
           {error && <p>{error}</p>}
         </div>
-        <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-5" >
+        <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-10" >
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
                 <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
@@ -100,17 +127,14 @@ const Cases: React.FC= () => {
                     </tr>
                 </thead>
                 <tbody>
-                      {data.map(item=>(
-                        <CaseInformation key={item.id}  arepons={item} />
+                      {data.map((item)=>(
+                        <CaseInformation key={item.case_id}  arepons={item} />
                       ))}            
                 </tbody>                
               </table>
             </div>
         </div>
       </section>
-
-
-
     </div>
   );
 };

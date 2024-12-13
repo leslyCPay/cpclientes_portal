@@ -237,11 +237,6 @@ const DetailCase: React.FC = () => {
                    
                 </div>
 
-
-
-
-
-
             </div>
         </div>
 

@@ -2,7 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-interface Props{      
+interface Props{
+    case_id: string; 
+    case_number: string; 
+    claim_number: string;      
     [key: string]: any;    
 }
 
@@ -12,7 +15,8 @@ const CaseInformation: React.FC<{arepons:Props}> = ({arepons}) => {
     const navigate = useNavigate(); 
     const goToCaseDetails = (caseId: string) => { 
         navigate(`/detail-case/${caseId}`); 
-    };    
+    }; 
+     
 
     return (    
             <tr className="bg-tussock-300 border-b border-tussock-500" key={arepons.case_id}>
