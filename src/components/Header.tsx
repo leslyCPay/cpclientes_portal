@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'; 
+import React, { useEffect } from 'react';
 import { Dropdown  } from 'flowbite';
 import type { DropdownOptions } from 'flowbite';
 import type { InstanceOptions } from 'flowbite';
@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
- 
+
     useEffect(() => { 
         const $targetEl = document.getElementById('dropdownAvatarName'); 
         const $triggerEl = document.getElementById('dropdownAvatarNameButton'); 
@@ -35,8 +35,9 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
                 }; 
         
         new Dropdown($targetEl, $triggerEl, options, instanceOptions); 
-    } }, [isLoggedIn]); 
-    
+    } }, [isLoggedIn]);     
+
+
     return(
         
         <div className="flex justify-between bg-black p-8">
@@ -45,7 +46,11 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
             src="https://cdn.prod.website-files.com/66bbb545d353c3a7e92ecca8/66bfa0324666062ecfd9d674_Insurance%20Trial%20Lawyers%20Logo.svg?color=indigo&shade=200"
             className="mx-auto h-10 w-auto"
             /> 
-    
+            {/*<input
+            className="w-36 rounded-full bg-red-50 px-4 py-2 transition-all focus:w-60"
+            placeholder="Search.."
+            />*/}
+          
             {isLoggedIn && (
                 <div className='profile-header'>                   
                     <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName" className=" bg-tussock-500 flex items-center text-sm pe-1 font-medium text-gray-900 rounded-full hover:text-tussock-100 hover:bg-tussock-500 dark:hover:text-tussock-400 md:me-0 focus:ring-4 focus:ring-tussock-500 dark:focus:ring-tussock-600 dark:text-white pr-5" type="button">
