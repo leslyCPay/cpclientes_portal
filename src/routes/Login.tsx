@@ -4,13 +4,18 @@ import axios from 'axios';
 import '../assets/Login.css';
 import { ClipLoader } from 'react-spinners';
 import BASE_URL from '../config'; // Import the base URL
+
+interface LoginProps { 
+  setIsLoggedIn: (loggedIn: boolean) => void; 
+}
+
 // Definimos los tipos para los estados
 interface LoginFormState {
   username: string;
   password: string;
 }
 
-const Login: React.FC = () => {
+const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   // Estado para los campos de entrada (usuario y contraseña)
   const [formData, setFormData] = useState<LoginFormState>({
     username: '',
@@ -20,9 +25,7 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showError, setShowError] = useState<boolean>(false); 
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    () => localStorage.getItem('logged_user') !== null
-  );
+
   
 
   // Manejador del formulario
@@ -41,9 +44,7 @@ const Login: React.FC = () => {
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('email', email); 
         localStorage.setItem('logged_user', 'true');
-        const logIn = () => setIsLoggedIn(true);
-
-       
+        setIsLoggedIn(true);
         // Redirect or update UI on successful login
         navigate('/cases', { state: { email } });
 
@@ -54,6 +55,7 @@ const Login: React.FC = () => {
         setTimeout(() => { 
           setShowError(false); 
         }, 5000); 
+        setIsLoggedIn(false);
       } finally{
         setLoading(false);
       }

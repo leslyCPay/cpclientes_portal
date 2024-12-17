@@ -9,11 +9,10 @@ import BASE_URL from '../config'; // Import the base URL
 const DetailCase: React.FC = () => {
     const { caseId } = useParams<{ caseId: string }>(); 
     const [caseDetails, setCaseDetails] = useState<any>(null);
-    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleBackButtonClick = () => {
-        navigate(-1); // Navigate one step back in history
+        navigate(-1); 
     };
 
     
