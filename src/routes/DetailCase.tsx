@@ -3,19 +3,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import BASE_URL from '../config'; // Import the base URL
+import ProgressBar from '../components/ProgressBar';
 
+export interface stageProps { 
+    stage: string[] | number; 
+}
+
+export const stage: stageProps = { 
+    stage : ['Pre-Litigation', 'Complaint','Defendant MTD','Plaintiff Discovery','Defendant Discovery','Plaintiff Deposition','Defendant Deposition','Defendant MSJ','Plaintiff MSJ','Appraisal','Mediation Arbitration','Trial','Appeal','Settlement']
+};
 
 
 const DetailCase: React.FC = () => {
     const { caseId } = useParams<{ caseId: string }>(); 
     const [caseDetails, setCaseDetails] = useState<any>(null);
+    const [currentStepValue, setCurrentStepValue] = useState<string>('');
     const navigate = useNavigate();
 
     const handleBackButtonClick = () => {
         navigate(-1); 
-    };
-
-    
+    }; 
 
     
     useEffect(() => { 
@@ -23,6 +30,8 @@ const DetailCase: React.FC = () => {
             try { 
                 const response = await axios.get(`${BASE_URL}/api/details?case_id=${caseId}`); 
                 setCaseDetails(response.data); 
+                setCurrentStepValue(response.data.stage);
+                //setCurrentStepValue('Appraisal');
             } catch (error) {                              
                 console.error('Error fetching case details:', error); 
               
@@ -39,22 +48,25 @@ const DetailCase: React.FC = () => {
     }
         
     const currencyFormatter = ({ currency, value }: CurrencyFormatterParams): string => {
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        minimumFractionDigits: 2,
-        currency,
-    });
-    return formatter.format(value);
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            minimumFractionDigits: 2,
+            currency,
+        });
+        return formatter.format(value);
     };
-          
+
+    
+    const steps = ['Pre-Litigation', 'Complaint', 'Plaintiff Discovery', 'Plaintiff Deposition','Plaintiff MSJ','Appraisal','Trial','Settlement']; 
+    
+   // if (!caseDetails) { return <Loader />; }
     
          
     return(
         
-     <div className="h-full w-full ">       
-            
-            <div className="container mx-auto min-h-screen bg-amber-100">
-                    <div >
+     <div className="h-full w-full ">            
+            <div className="mx-auto min-h-screen bg-amber-100">
+                    <div className='cp-breadcrumbs' >
                         <nav className="flex bg-gray-50 text-tussock-600 border border-gray-200 py-3 px-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" aria-label="Breadcrumb">
                         <ol className="inline-flex items-center space-x-1 md:space-x-3">
                             <li className="inline-flex items-center">
@@ -71,51 +83,17 @@ const DetailCase: React.FC = () => {
                             </li>
                         </ol>
                         </nav>
-                    </div>                               
-                
-                    <div className="w-11/12 lg:w-2/6 mx-auto py-16">                    
-                        <div className="bg-gray-200 h-1 flex items-center justify-between">
-                            <div className="w-1/3 bg-tussock-500 h-1 flex items-center">
-                                <div className="bg-tussock-500 h-6 w-6 rounded-full shadow flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-check" width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" />
-                                        <path d="M5 12l5 5l10 -10" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className="w-1/3 flex justify-between bg-tussock-500 h-1 items-center relative">
-                                <div className="absolute right-0 -mr-2">
-                                    <div className="relative bg-white shadow-lg px-2 py-1 rounded mt-16 -mr-12">
-                                        <svg className="absolute top-0 -mt-1 w-full right-0 left-0" width="16px" height="8px" viewBox="0 0 16 8" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                                                <g id="Progress-Bars" transform="translate(-322.000000, -198.000000)" fill="#FFFFFF">
-                                                    <g id="Group-4" transform="translate(310.000000, 198.000000)">
-                                                        <polygon id="Triangle" points="20 0 28 8 12 8"></polygon>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </svg>
-                                        <p  className="focus:outline-none text-tussock-500 text-xs font-bold">Step 3: Analyzing</p>
-                                    </div>
-                                </div>
-                                <div className="bg-tussock-500 h-6 w-6 rounded-full shadow flex items-center justify-center -ml-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-check" width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" />
-                                        <path d="M5 12l5 5l10 -10" />
-                                    </svg>
-                                </div>
-                                <div className="bg-white h-6 w-6 rounded-full shadow flex items-center justify-center -mr-3 relative">
-                                    <div className="h-3 w-3 bg-tussock-500 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div className="w-1/3 flex justify-end">
-                                <div className="bg-white h-6 w-6 rounded-full shadow"></div>
-                            </div>
-                        </div>
-                    </div>
+                    </div>  
+                    
+                    <div>
+                    {caseDetails&& (  
+                       <ProgressBar steps={steps} currentStepValue= {currentStepValue} />  
+                    )}
+                       
+                    </div>                  
              
 
-                <div className="flex flex-col gap-3 mt-4 min-h-full">                       
+                <div className="cp-detailsCase flex flex-col gap-3 mt-4 min-h-full">                       
 
                     <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow border-4 border-amber-600 rounded min-h-full justify-center mb-5" >
                        {caseDetails? (  

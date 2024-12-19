@@ -43,7 +43,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         const { access_token } = response.data;
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('email', email); 
-        localStorage.setItem('logged_user', 'true');
+        sessionStorage.setItem('logged_user', 'true');
         setIsLoggedIn(true);
         // Redirect or update UI on successful login
         navigate('/cases', { state: { email } });
