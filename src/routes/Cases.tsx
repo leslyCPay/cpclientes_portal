@@ -103,37 +103,38 @@ const Cases: React.FC= () => {
        <section className="container mx-auto p-6 font-questrial min-h-full">
         <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5md lg:text-6md dark:text-white">List of <span className="underline underline-offset-3 decoration-8 decoration-tussock-400 dark:decoration-tussock-600">Cases</span></h2>
         {/* <p className="text-md font-normal text-gray-500 lg:text-md dark:text-gray-400 mb-5">All of these cases are with us.</p> */}
-        <div>
-          {loading && <Loader />}
+        <div>         
           {error && <p>{error}</p>}
         </div>
-        <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-10" >
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
-                <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
-                    <tr>
-                        <th scope="col" className="px-6 py-3">
-                            Case ID
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Claim Number
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Case Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                      {data.map((item)=>(
-                        <CaseInformation key={item.case_id}  arepons={item} />
-                      ))}            
-                </tbody>                
-              </table>
-            </div>
-        </div>
+        {loading ? (<Loader />):(
+             <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-10" >
+             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+               <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
+                 <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
+                     <tr>
+                         <th scope="col" className="px-6 py-3">
+                             Case ID
+                         </th>
+                         <th scope="col" className="px-6 py-3">
+                             Claim Number
+                         </th>
+                         <th scope="col" className="px-6 py-3">
+                             Case Status
+                         </th>
+                         <th scope="col" className="px-6 py-3">
+                             Action
+                         </th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                       {data.map((item)=>(
+                         <CaseInformation key={item.case_id}  arepons={item} />
+                       ))}            
+                 </tbody>                
+               </table>
+             </div>
+         </div>
+        )}
       </section>
     </div>
   );
@@ -141,9 +142,6 @@ const Cases: React.FC= () => {
 
 export default Cases;
 
-// function setIsLoggedIn(arg0: boolean) {
-//   throw new Error('Function not implemented.');
-// }
 
 
 

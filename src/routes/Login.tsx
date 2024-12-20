@@ -23,7 +23,8 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [showError, setShowError] = useState<boolean>(false); 
+  const [showError, setShowError] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false); 
   const navigate = useNavigate();
 
   
@@ -72,6 +73,10 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     });
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     
     <div className="login flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 text-black ">
@@ -113,11 +118,11 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   </a>
                 </div>
               </div>
-              <div className="mt-2">
+              <div className="mt-2 relative">
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   //autoComplete="current-password"
                   placeholder='Password'
@@ -125,6 +130,43 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   onChange={handleChange}                  
                   className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm/6 pl-2"
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                >
+                  {showPassword ? (
+                    <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7C3.732 7.943 7.523 5 12 5c.95 0 1.865.134 2.738.384M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15.232 15.232L20.485 20.485"
+                      />
+                    </svg>
+                  )}
+                </button>               
                 {showError && <p className="error">{errorMessage}</p>}
               </div>
             </div>

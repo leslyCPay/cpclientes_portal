@@ -5,19 +5,12 @@ import Loader from '../components/Loader';
 import BASE_URL from '../config'; // Import the base URL
 import ProgressBar from '../components/ProgressBar';
 
-export interface stageProps { 
-    stage: string[] | number; 
-}
-
-export const stage: stageProps = { 
-    stage : ['Pre-Litigation', 'Complaint','Defendant MTD','Plaintiff Discovery','Defendant Discovery','Plaintiff Deposition','Defendant Deposition','Defendant MSJ','Plaintiff MSJ','Appraisal','Mediation Arbitration','Trial','Appeal','Settlement']
-};
-
 
 const DetailCase: React.FC = () => {
     const { caseId } = useParams<{ caseId: string }>(); 
     const [caseDetails, setCaseDetails] = useState<any>(null);
     const [currentStepValue, setCurrentStepValue] = useState<string>('');
+    const [labelStep, setlabelStep] = useState<string>('');
     const navigate = useNavigate();
 
     const handleBackButtonClick = () => {
@@ -29,9 +22,9 @@ const DetailCase: React.FC = () => {
         const fetchCaseDetails = async () => { 
             try { 
                 const response = await axios.get(`${BASE_URL}/api/details?case_id=${caseId}`); 
-                setCaseDetails(response.data); 
-                setCurrentStepValue(response.data.stage);
-                //setCurrentStepValue('Appraisal');
+                setCaseDetails(response.data);                            
+                setCurrentStepValue(response.data.step);
+                setlabelStep(response.data.stage);
             } catch (error) {                              
                 console.error('Error fetching case details:', error); 
               
@@ -58,10 +51,8 @@ const DetailCase: React.FC = () => {
 
     
     const steps = ['Pre-Litigation', 'Complaint', 'Plaintiff Discovery', 'Plaintiff Deposition','Plaintiff MSJ','Appraisal','Trial','Settlement']; 
-    
-   // if (!caseDetails) { return <Loader />; }
-    
-         
+   
+
     return(
         
      <div className="h-full w-full ">            
@@ -85,22 +76,18 @@ const DetailCase: React.FC = () => {
                         </nav>
                     </div>  
                     
-                    <div>
                     {caseDetails&& (  
-                       <ProgressBar steps={steps} currentStepValue= {currentStepValue} />  
+                            <ProgressBar steps={steps} currentStepValue={currentStepValue} labelStep={labelStep} />
                     )}
-                       
-                    </div>                  
-             
 
-                <div className="cp-detailsCase flex flex-col gap-3 mt-4 min-h-full">                       
+                <div className="cp-detailsCase flex flex-col gap-3 mt-16 min-h-full"> 
+                    <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow border-4 border-amber-600 rounded min-h-full justify-center mb-8" >
+                    {caseDetails ? (
+                        <React.Fragment>
+                         
 
-                    <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow border-4 border-amber-600 rounded min-h-full justify-center mb-5" >
-                       {caseDetails? (  
-                        <header className=" grid grid-cols-4 "></header>
-                    ): ( <Loader /> )}
-                    {caseDetails? (
-                        <div className="w-full grid grid-cols-3 pt-4" >                       
+                        <div className="w-full grid grid-cols-3 pt-4" >
+                                                   
                            {/*  {Object.keys(caseDetails).map((key, index) => (                                
                                 <div className='text-base leading-8 py-4' key={index}>
                                     <p className='text-xs font-semibold text-amber-700 uppercase'>{key.replace(/_/g, " ")}</p>
@@ -109,15 +96,15 @@ const DetailCase: React.FC = () => {
                             ))}  */}
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>case id</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['case_id']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['case_id']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>status</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['status']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['status']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>insured</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['insured']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['insured']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>address</p>
@@ -125,19 +112,19 @@ const DetailCase: React.FC = () => {
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>county</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['county']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['county']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>phone</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['phone']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['phone']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>e-mail</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['e_mail']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['e_mail']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>insurance company</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['insurance_company']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['insurance_company']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>policy number</p>
@@ -145,71 +132,72 @@ const DetailCase: React.FC = () => {
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>claim number</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['claim_number']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['claim_number']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>date of loss</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['date_of_loss']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['date_of_loss']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>denial reasons</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['denial_reasons']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['denial_reasons']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>total bill amount</p>
-                                <p  className='text-md text-gray-500'> {currencyFormatter({currency:'USD', value:caseDetails['total_bill_amount'],})}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {currencyFormatter({currency:'USD', value:caseDetails['total_bill_amount'],})}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>case number</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['case_number']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['case_number']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>Assigned Attorney</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['attorney']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['attorney']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>Legal Assistant</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['case_manager']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['case_manager']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>public adjuster</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['public_adjuster']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['public_adjuster']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>final status</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['final_status']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['final_status']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>depo of plaintiff date</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['depo_of_plaintiff_date']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['depo_of_plaintiff_date']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>mediation date</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['mediation_date']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['mediation_date']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>pfs crn 57 105 status</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['pfs_crn_57_105_status']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['pfs_crn_57_105_status']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>pfs received</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['pfs_received']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['pfs_received']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>pfs amount</p>
-                                <p  className='text-md text-gray-500'> {currencyFormatter({currency:'USD', value:caseDetails['pfs_amount'],})}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {currencyFormatter({currency:'USD', value:caseDetails['pfs_amount'],})}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>safe harbor letter received</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['safe_harbor_letter_received']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['safe_harbor_letter_received']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>trial date</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['trial_date']}</p>
+                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['trial_date']}</p>
                             </div>
                                         
                         </div>
-                     ): ( <div></div> )}     
+                        </React.Fragment>
+                     ): ( <Loader /> )}     
                     </div>
                    
                 </div>
