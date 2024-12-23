@@ -81,15 +81,14 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     
     <div className="login flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 text-black ">
       <div className='login-container bg-tussock-400 rounded-3xl' >
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">        
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm block">        
           <h2 className="mt-10 text-center text-2xl/9 font-semibold tracking-wide ">
             Home Owners' Area Login
-          </h2>
+          </h2>          
         </div>
-
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+            <div>           
               <label htmlFor="email" className="block text-sm/6 font-medium text-neutral-900">
                 Email address
               </label>
@@ -136,7 +135,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
                 >
                   {showPassword ? (
-                    <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -151,7 +150,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                       />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -167,8 +166,12 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                     </svg>
                   )}
                 </button>               
-                {showError && <p className="error">{errorMessage}</p>}
+                
               </div>
+              <div className='h-3'>
+                {showError && <span className="error">{errorMessage}</span>}
+              </div>
+              
             </div>
 
             <div>            

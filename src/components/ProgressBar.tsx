@@ -12,11 +12,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, currentStepValue, labe
   return ( 
     <React.Fragment>    
     
-      <div className="cp-progressbar w-11/12 lg:w-4/6 mx-auto py-6 mt-3">
-
-          <div  className='mt-5 mx-auto flex'>
-            <h2 className="text-1xl font-bold leading-none tracking-tight text-gray-900 xs:text-1md md:text-2md lg:text-3md dark:text-white">Stage:</h2>
-          </div>         
+      <div className="cp-progressbar w-11/12 lg:w-4/6 mx-auto py-6 mt-5">
           <div className="h-1 flex items-center justify-between mt-10">           
             {steps.map((step, index) => (
               <React.Fragment key={index}>

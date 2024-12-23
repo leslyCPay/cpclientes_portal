@@ -96,103 +96,103 @@ const DetailCase: React.FC = () => {
                             ))}  */}
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>case id</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['case_id']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['case_id']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>status</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['status']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['status']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>insured</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['insured']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['insured']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>address</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['address']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['address']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>county</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['county']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['county']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>phone</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['phone']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['phone']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>e-mail</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['e_mail']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['e_mail']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>insurance company</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['insurance_company']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['insurance_company']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>policy number</p>
-                                <p  className='text-md text-gray-500'> {caseDetails['policy_number']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['policy_number']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>claim number</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['claim_number']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['claim_number']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>date of loss</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['date_of_loss']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['date_of_loss']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>denial reasons</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['denial_reasons']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['denial_reasons']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>total bill amount</p>
-                                <p  className='text-md text-gray-500 pr-5'> {currencyFormatter({currency:'USD', value:caseDetails['total_bill_amount'],})}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {currencyFormatter({currency:'USD', value:caseDetails['total_bill_amount'],})}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>case number</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['case_number']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['case_number']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>Assigned Attorney</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['attorney']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['attorney']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>Legal Assistant</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['case_manager']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['case_manager']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>public adjuster</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['public_adjuster']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['public_adjuster']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>final status</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['final_status']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['final_status']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>depo of plaintiff date</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['depo_of_plaintiff_date']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['depo_of_plaintiff_date']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>mediation date</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['mediation_date']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['mediation_date']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>pfs crn 57 105 status</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['pfs_crn_57_105_status']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['pfs_crn_57_105_status']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>pfs received</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['pfs_received']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['pfs_received']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>pfs amount</p>
-                                <p  className='text-md text-gray-500 pr-5'> {currencyFormatter({currency:'USD', value:caseDetails['pfs_amount'],})}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {currencyFormatter({currency:'USD', value:caseDetails['pfs_amount'],})}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>safe harbor letter received</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['safe_harbor_letter_received']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['safe_harbor_letter_received']}</p>
                             </div>
                             <div className='text-base leading-8 py-4'>
                                 <p className='text-xs font-semibold text-amber-700 uppercase'>trial date</p>
-                                <p  className='text-md text-gray-500 pr-5'> {caseDetails['trial_date']}</p>
+                                <p  className='text-md text-gray-500 pr-5 uppercase font-semibold'> {caseDetails['trial_date']}</p>
                             </div>
                                         
                         </div>
