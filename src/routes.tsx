@@ -3,6 +3,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './routes/Login';
 import Cases from './routes/Cases';
 import DetailCase from './routes/DetailCase';
+import Register from './routes/Register';
+import ForgetPass from './routes/ForgetPass';
+import ChangePass from './routes/ChangePass';
 
 
 interface AppRoutesProps { 
@@ -17,7 +20,10 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isLoggedIn, setIsLoggedIn }) => {
         <Route index path='/' element={<Navigate to={isLoggedIn ? "/cases" : "/login"} />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/cases" element={isLoggedIn ? <Cases /> : <Navigate to='/login'/> } />
-        <Route path="/detail-case/:caseId" element={<DetailCase />} />     
+        <Route path="/detail-case/:caseId" element={<DetailCase />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forget-password" element={<ForgetPass />} />
+        <Route path="/change-password" element={<ChangePass />} />              
       </Routes>
   );
 };

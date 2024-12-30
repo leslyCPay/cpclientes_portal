@@ -34,7 +34,7 @@ const Cases: React.FC= () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
-  const { email } = location.state || {};
+  const email = localStorage.getItem('email') || (location.state && location.state.email);
 
   const isFailedResponse = (response: Response): response is FailedResponse => { 
     return 'error' in response; 

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Dropdown  } from 'flowbite';
 import type { DropdownOptions } from 'flowbite';
 import type { InstanceOptions } from 'flowbite';
+import {  useNavigate } from 'react-router-dom';
 
 interface HeaderProps { 
     isLoggedIn: boolean;
@@ -9,7 +10,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
-
+     const navigate = useNavigate();
     useEffect(() => { 
         const $targetEl = document.getElementById('dropdownAvatarName'); 
         const $triggerEl = document.getElementById('dropdownAvatarNameButton'); 
@@ -22,13 +23,13 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
                 offsetDistance: 10, 
                 delay: 300, 
                 onHide: () => { 
-                    console.log('dropdown has been hidden'); 
+                    //console.log('dropdown has been hidden'); 
                 }, 
                 onShow: () => { 
-                    console.log('dropdown has been shown'); 
+                    //console.log('dropdown has been shown'); 
                 }, 
                 onToggle: () => { 
-                    console.log('dropdown has been toggled'); 
+                    //console.log('dropdown has been toggled'); 
                 }, }; 
                 const instanceOptions: InstanceOptions = { 
                     id: 'dropdownAvatarName', override: true 
@@ -41,11 +42,14 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
     return(
         
         <div className="flex justify-between bg-black p-8">
-            <img
-            alt="Home Owners Page"
-            src="https://cdn.prod.website-files.com/66bbb545d353c3a7e92ecca8/66bfa0324666062ecfd9d674_Insurance%20Trial%20Lawyers%20Logo.svg?color=indigo&shade=200"
-            className="mx-auto h-10 w-auto"
-            /> 
+            <a className="mx-auto" onClick={()=>navigate('/')}>
+                <img
+                alt="Home Owners Page"
+                src="https://cdn.prod.website-files.com/66bbb545d353c3a7e92ecca8/66bfa0324666062ecfd9d674_Insurance%20Trial%20Lawyers%20Logo.svg?color=indigo&shade=200"
+                className="mx-auto h-10 w-auto"
+                />
+            </a>
+            
             {/*<input
             className="w-36 rounded-full bg-red-50 px-4 py-2 transition-all focus:w-60"
             placeholder="Search.."
@@ -75,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onSignOut }) => {
                         </div> */}
                         <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
                             <li>
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Change Password</a>
+                                <a onClick={()=>navigate('/change-password')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Change Password</a>
                             </li>
                         </ul>
                         <div className="py-2">

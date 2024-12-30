@@ -112,7 +112,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   Password
                 </label>
                 <div className="text-sm">
-                  <a href="#" className="font-semibold text-tussock-600 hover:text-tussock-500">
+                  <a onClick={()=>navigate('/forget-password')} className="font-semibold text-tussock-600 hover:text-tussock-500">
                     Forgot password?
                   </a>
                 </div>
@@ -190,7 +190,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
           )}
           <p className="mt-10 text-center text-sm/6 text-tussock-200">
             Not a register yet?{' '}
-            <a href="#" className="font-semibold text-tussock-600 hover:text-tussock-500">
+            <a onClick={()=> navigate('/register')} className="font-semibold text-tussock-600 hover:text-tussock-500">
               Register
             </a>
           </p>
