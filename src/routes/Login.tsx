@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import '../assets/Login.css';
-import { ClipLoader } from 'react-spinners';
-import BASE_URL from '../config'; // Import the base URL
+import React, { useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import axios from "axios";
+import "../assets/Login.css";
+import { ClipLoader } from "react-spinners";
+import BASE_URL from "../config"; // Import the base URL
 
-interface LoginProps { 
-  setIsLoggedIn: (loggedIn: boolean) => void; 
+interface LoginProps {
+  setIsLoggedIn: (loggedIn: boolean) => void;
 }
 
 // Definimos los tipos para los estados
@@ -18,55 +18,51 @@ interface LoginFormState {
 const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   // Estado para los campos de entrada (usuario y contraseña)
   const [formData, setFormData] = useState<LoginFormState>({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [showError, setShowError] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false); 
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  
 
   // Manejador del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const email:string = formData.username;
-    const password:string = formData.password;
-   
+    const email: string = formData.username;
+    const password: string = formData.password;
 
     setLoading(true);
 
-      try { 
-        const response = await axios.post(`${BASE_URL}/api/login`, { email, password, }); 
-        const { access_token } = response.data;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('email', email); 
-        sessionStorage.setItem('logged_user', 'true');
-        setIsLoggedIn(true);
-        // Redirect or update UI on successful login
-        navigate('/cases', { state: { email } });
-
-      } catch (err) { 
-        setErrorMessage('Invalid login credentials');
-        setShowError(true); // Mostrar el mensaje de error 
-        // Ocultar el mensaje de error después de 3 segundos 
-        setTimeout(() => { 
-          setShowError(false); 
-        }, 5000); 
-        setIsLoggedIn(false);
-      } finally{
-        setLoading(false);
-      }
-
+    try {
+      const response = await axios.post(`${BASE_URL}/api/login`, {
+        email,
+        password,
+      });
+      const { access_token } = response.data;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("email", email);
+      sessionStorage.setItem("logged_user", "true");
+      setIsLoggedIn(true);
+      // Redirect or update UI on successful login
+      navigate("/cases", { state: { email } });
+    } catch (err) {
+      setErrorMessage("Invalid login credentials");
+      setShowError(true); // Mostrar el mensaje de error
+      // Ocultar el mensaje de error después de 3 segundos
+      setTimeout(() => {
+        setShowError(false);
+      }, 5000);
+      setIsLoggedIn(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Manejo de cambio en los campos de formulario
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -78,18 +74,20 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   };
 
   return (
-    
     <div className="login flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 text-black ">
-      <div className='login-container bg-tussock-400 rounded-3xl' >
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm block">        
+      <div className="login-container bg-tussock-400 rounded-3xl">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm block">
           <h2 className="mt-10 text-center text-2xl/9 font-semibold tracking-wide ">
             Home Owners' Area Login
-          </h2>          
+          </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>           
-              <label htmlFor="email" className="block text-sm/6 font-medium text-neutral-900">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm/6 font-medium text-neutral-900"
+              >
                 Email address
               </label>
               <div className="mt-2">
@@ -98,7 +96,8 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   name="username"
                   type="text"
                   required
-                  placeholder='Please enter your registered email'
+                  autoComplete="username"
+                  placeholder="Please enter your registered email"
                   value={formData.username}
                   onChange={handleChange}
                   className="block w-full rounded-md border-0 py-1.5 text-tussock-500 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm/6 pl-2"
@@ -108,11 +107,17 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm/6 font-medium text-neutral-900">
+                <label
+                  htmlFor="password"
+                  className="block text-sm/6 font-medium text-neutral-900"
+                >
                   Password
                 </label>
                 <div className="text-sm">
-                  <a onClick={()=>navigate('/forget-password')} className="font-semibold text-tussock-600 hover:text-tussock-500">
+                  <a
+                    onClick={() => navigate("/forget-password")}
+                    className="font-semibold text-tussock-600 hover:text-tussock-500 cursor-pointer"
+                  >
                     Forgot password?
                   </a>
                 </div>
@@ -123,10 +128,10 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  //autoComplete="current-password"
-                  placeholder='Password'
+                  autoComplete="current-password"
+                  placeholder="Password"
                   value={formData.password}
-                  onChange={handleChange}                  
+                  onChange={handleChange}
                   className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm/6 pl-2"
                 />
                 <button
@@ -135,7 +140,12 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
                 >
                   {showPassword ? (
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="h-5 w-5 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -150,7 +160,12 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                       />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="h-5 w-5 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -165,37 +180,37 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                       />
                     </svg>
                   )}
-                </button>               
-                
+                </button>
               </div>
-              <div className='h-3'>
+              <div className="h-3">
                 {showError && <span className="error">{errorMessage}</span>}
               </div>
-              
             </div>
 
-            <div>            
+            <div>
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-full bg-neutral-900 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-neutral-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tussock-600"
               >
                 Sign in
-              </button>              
+              </button>
             </div>
           </form>
-          {loading && ( 
-            <div className="flex justify-center mt-4"> 
-              <ClipLoader size={35} color={"#000000"} loading={loading} /> 
-            </div> 
+          {loading && (
+            <div className="flex justify-center mt-4">
+              <ClipLoader size={35} color={"#000000"} loading={loading} />
+            </div>
           )}
           <p className="mt-10 text-center text-sm/6 text-tussock-200">
-            Not a register yet?{' '}
-            <a onClick={()=> navigate('/register')} className="font-semibold text-tussock-600 hover:text-tussock-500">
+            Not a register yet?{" "}
+            <a
+              onClick={() => navigate("/register")}
+              className="font-semibold text-tussock-600 hover:text-tussock-500"
+            >
               Register
             </a>
           </p>
         </div>
-        
       </div>
       <Outlet />
     </div>

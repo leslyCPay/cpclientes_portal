@@ -67,9 +67,18 @@ const Cases: React.FC= () => {
         .then(response => ({ 
           data: response.data 
         }))
-        .catch(error => ({ 
-          error, name
-        }));
+        .catch(error => {
+          if (axios.isAxiosError(error)) {
+            if (error.response?.status === 404) {
+              // Handle 404 error 
+              return { error: 'API endpoint not found', name };               
+            } else { 
+              // Handle other errors
+              return { error: error.message, name }; 
+            } 
+          }
+          return { error: 'An unexpected error occurred', name };
+        });
 
       }); 
       const responses = await Promise.all(requests); 
@@ -78,7 +87,8 @@ const Cases: React.FC= () => {
       const allData = successfulResponses.flatMap(response => Object.values(response.data)); 
       setData(allData);
       const failedResponses = responses.filter(isFailedResponse); 
-      if (failedResponses.length) { 
+      if (failedResponses.length) {
+        //console.log('hello');
         //setError(`Failed to fetch data for names: ${failedResponses.map(fr => fr.name).join(', ')}`);
       }
       

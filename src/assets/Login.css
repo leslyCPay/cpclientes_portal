@@ -19,9 +19,8 @@ button {
 
 .error {
   color: red;
-  font-size: 12px;
   font-family: "Questrial", sans-serif;
-  animation: fadeOut 5s forwards;
+  animation: fadeOut 10s forwards;
 }
 
 .login {

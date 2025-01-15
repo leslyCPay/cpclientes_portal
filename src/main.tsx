@@ -31,7 +31,7 @@ const MainApp: React.FC = () => {
 };
 
 const AppWrapper: React.FC = () => ( 
-  <Router> 
+  <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}> 
   <MainApp /> 
   </Router> 
 );
