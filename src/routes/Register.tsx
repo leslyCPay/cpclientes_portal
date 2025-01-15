@@ -5,6 +5,7 @@ import BASE_URL from "../config";
 import Modal from "react-modal";
 import ModalOTP from "../components/ModalOTP";
 import PasswordStrengthChecker from "../components/PasswordStrengthChecker";
+import { handleApiError } from "../utils/apiErrorHandler";
 
 Modal.setAppElement("#root");
 
@@ -53,12 +54,14 @@ const Register: React.FC = () => {
         const text = `To complete the registration process, an OTP has been sent to ${formData.email} , please input it here:`;
         setModalMessage(text);
       } else {
-        setModalMessage("User does not exist.");
+        setModalMessage("Email is not registered in our Database.");
       }
 
       setModalIsOpen(true);
     } catch (error) {
-      setErrorMessage("Email is not registered in our Database.");
+      //setErrorMessage("Email is not registered in our Database.");
+      setErrorMessage(handleApiError(error));
+      setFormData(initialFormData);
     } finally {
       setLoading(false);
     }
@@ -72,7 +75,7 @@ const Register: React.FC = () => {
   const closeModal = () => {
     setModalIsOpen(false);
     setFormData(initialFormData);
-    if (modalMessage === "User does not exist.") {
+    if (modalMessage === "Email is not registered in our Database.") {
       navigate("/login");
     }
   };
