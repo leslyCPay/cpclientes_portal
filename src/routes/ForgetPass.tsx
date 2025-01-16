@@ -67,7 +67,7 @@ const ForgetPass: React.FC = () => {
                       type="email"
                       id="email"
                       name="email"
-                      className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
+                      className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:ring-primary-600 focus:border-primary-600  p-2.5"
                       required
                       aria-describedby="email-error"
                       value={email}

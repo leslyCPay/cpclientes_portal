@@ -66,7 +66,7 @@ const ModalOTP: React.FC<ModalOTPProps> = ({
       const result = response.data.user;
 
       if (!isEmpty(result)) {
-        setOtpResponse("OTP verification successful!");
+        setOtpResponse("Registration successful!");
         setShowRedirectButton(true);
       } else {
         setOtpResponse("Invalid OTP. Please try again.");

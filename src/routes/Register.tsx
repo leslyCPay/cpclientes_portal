@@ -88,10 +88,10 @@ const Register: React.FC = () => {
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="flex-col items-center justify-center px-6 py-8 mx-auto ml:h-screen lg:py-0 block">
+      <div className="items-center justify-center px-6 py-8 mx-auto ml:h-screen my-3 block">
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 m-auto">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center">
               Create an account
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleRegister}>
@@ -107,7 +107,6 @@ const Register: React.FC = () => {
                   name="firstname"
                   id="first-name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="John"
                   required
                   autoComplete="firstname"
                   onChange={handleChange}
@@ -125,7 +124,6 @@ const Register: React.FC = () => {
                   name="lastname"
                   id="last-name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 autocomplete"
-                  placeholder="Doe"
                   required
                   autoComplete="lastname"
                   onChange={handleChange}
@@ -143,7 +141,6 @@ const Register: React.FC = () => {
                   name="email"
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
                   required
                   autoComplete="email"
                   onChange={handleChange}
@@ -161,7 +158,6 @@ const Register: React.FC = () => {
                   name="phone"
                   id="phone"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="+1896523648"
                   required
                   autoComplete="phone"
                   onChange={handleChange}
@@ -201,7 +197,6 @@ const Register: React.FC = () => {
                   type="password"
                   name="confirm-password"
                   id="confirm-password"
-                  placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
                   autoComplete="password"
@@ -217,15 +212,18 @@ const Register: React.FC = () => {
                                 </div>
                             </div> */}
 
-              {errorMessage && (
-                <p className="text-red-500 text-sm">{errorMessage}</p>
-              )}
               <button
                 type="submit"
                 className="w-full text-white bg-tussock-500 hover:bg-black-100 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 {loading ? "Loading..." : "Create an account"}
               </button>
+
+              {errorMessage && (
+                <span className="error text-md mt-5 block text-center">
+                  {errorMessage}
+                </span>
+              )}
               <p className="text-sm font-light text-gray-500 dark:text-gray-400 text-center">
                 Already have an account?{" "}
                 <a

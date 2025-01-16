@@ -9,9 +9,7 @@ export const handleApiError = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<ApiError>;
     if (axiosError.response && axiosError.response.status === 422) {
-      return (
-        "Validation Error: " + JSON.stringify(axiosError.response.data.errors)
-      );
+      return JSON.stringify(axiosError.response.data.errors);
     } else {
       return (
         "Error: " +
