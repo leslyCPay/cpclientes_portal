@@ -8,8 +8,28 @@ interface ApiError {
 export const handleApiError = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<ApiError>;
+
+    // Characters to remove
+    let charsToRemove: string = '{}[]"';
+
+    function escapeRegExp(string: string): string {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    // Function to remove specific characters from a string
+    function removeChars(str: string, chars: string): string {
+      let escapedChars = escapeRegExp(chars);
+      let regex = new RegExp(`[${escapedChars}]`, "g");
+      return str.replace(regex, "");
+    }
+
     if (axiosError.response && axiosError.response.status === 422) {
-      return JSON.stringify(axiosError.response.data.errors);
+      let result = removeChars(
+        JSON.stringify(axiosError.response.data.errors),
+        charsToRemove
+      );
+      console.log(result);
+      return result;
     } else {
       return (
         "Error: " +

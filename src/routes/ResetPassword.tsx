@@ -15,6 +15,8 @@ const ResetPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   useEffect(() => {
     const emailFromURL = searchParams.get("email");
@@ -36,6 +38,7 @@ const ResetPassword: React.FC = () => {
 
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
+      setLoading(false);
       return;
     }
 
@@ -47,12 +50,17 @@ const ResetPassword: React.FC = () => {
         password_confirmation: confirmPassword,
       });
 
+      console.log(response);
+
       if (response.data.success) {
         setMessage("Password reset successfully.");
         setEmail("");
         setPassword("");
         setConfirmPassword("");
-        navigate("/login");
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 5000);
       } else {
         setMessage("Error resetting password.");
       }
@@ -60,11 +68,16 @@ const ResetPassword: React.FC = () => {
       setMessage(handleApiError(error));
     } finally {
       setLoading(false);
+      setTimestamp(Date.now());
     }
   };
 
   const handlePasswordChange = (password: string) => {
     setPassword(password);
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -79,11 +92,18 @@ const ResetPassword: React.FC = () => {
             className="mt-4 space-y-4 lg:mt-5 md:space-y-5"
             onSubmit={handleSubmit}
           >
+            <input
+              id="username"
+              type="hidden"
+              name="username"
+              value={email}
+              autoComplete="username"
+            />
             <PasswordStrengthChecker
               name="password"
               onPasswordChange={handlePasswordChange}
             />
-            <div>
+            <div className="relative">
               <label
                 htmlFor="confirm_password"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -91,7 +111,7 @@ const ResetPassword: React.FC = () => {
                 Confirm password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="confirm_password"
                 placeholder="••••••••"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -100,6 +120,15 @@ const ResetPassword: React.FC = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="confirm-password"
               />
+              <button
+                className="absolute bottom-[3px] right-3 flex items-center text-sm  px-0 text-gray-600 bg-gray-50 border-right border-gray-300"
+                type="button"
+                onClick={handleTogglePassword}
+              >
+                <i
+                  className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                ></i>
+              </button>
             </div>
 
             <button
@@ -111,7 +140,10 @@ const ResetPassword: React.FC = () => {
             </button>
           </form>
           {message && (
-            <span className="error text-md mt-5 block text-center">
+            <span
+              key={timestamp}
+              className="error text-md mt-5 block text-center"
+            >
               {message}
             </span>
           )}

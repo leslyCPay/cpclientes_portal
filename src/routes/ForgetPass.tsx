@@ -9,12 +9,12 @@ const ForgetPass: React.FC = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
+      setLoading(true);
       const response = await axios.post(`${BASE_URL}/api/forgot-password`, {
         email,
       });
@@ -26,16 +26,18 @@ const ForgetPass: React.FC = () => {
         setMessage("Email is not registered in our Database.");
       }
     } catch (error) {
+      setLoading(false);
       setMessage(handleApiError(error));
       setEmail("");
     } finally {
       setLoading(false);
+      setTimestamp(Date.now());
     }
   };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto sm:min-h-full md:h-screen lg:py-0">
         <div className="w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
           <div className="text-center">
             <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
@@ -92,7 +94,10 @@ const ForgetPass: React.FC = () => {
               </div>
             </form>
             {message && (
-              <span className="error text-md mt-5 block text-center">
+              <span
+                key={timestamp}
+                className="error text-md mt-5 block text-center"
+              >
                 {message}
               </span>
             )}

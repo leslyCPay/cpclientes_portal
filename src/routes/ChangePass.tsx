@@ -12,6 +12,9 @@ const ChangePass: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showPassword2, setShowPassword2] = useState<boolean>(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +53,7 @@ const ChangePass: React.FC = () => {
       setMessage(handleApiError(error));
     } finally {
       setLoading(false);
+      setTimestamp(Date.now());
     }
   };
 
@@ -59,6 +63,14 @@ const ChangePass: React.FC = () => {
 
   const handleCasesClick = () => {
     navigate("/cases");
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleTogglePassword2 = () => {
+    setShowPassword2(!showPassword2);
   };
 
   return (
@@ -117,7 +129,7 @@ const ChangePass: React.FC = () => {
             className="mt-4 space-y-4 lg:mt-5 md:space-y-5"
             onSubmit={handleSubmit}
           >
-            <div>
+            <div className="relative">
               <label
                 htmlFor="current-password"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -125,7 +137,7 @@ const ChangePass: React.FC = () => {
                 Current Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="current-password"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="••••••••"
@@ -134,12 +146,21 @@ const ChangePass: React.FC = () => {
                 value={currentPassword}
                 autoComplete="current-password"
               />
+              <button
+                className="absolute bottom-[3px] right-3 flex items-center text-sm  px-0 text-gray-600 bg-gray-50 border-right border-gray-300"
+                type="button"
+                onClick={handleTogglePassword}
+              >
+                <i
+                  className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                ></i>
+              </button>
             </div>
             <PasswordStrengthChecker
               name="new_password"
               onPasswordChange={handlePasswordChange}
             />
-            <div>
+            <div className="relative">
               <label
                 htmlFor="confirm_password"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -147,7 +168,7 @@ const ChangePass: React.FC = () => {
                 Confirm password
               </label>
               <input
-                type="password"
+                type={showPassword2 ? "text" : "password"}
                 id="confirm_password"
                 placeholder="••••••••"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -156,6 +177,15 @@ const ChangePass: React.FC = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="confirm-password"
               />
+              <button
+                className="absolute bottom-[3px] right-3 flex items-center text-sm  px-0 text-gray-600 bg-gray-50 border-right border-gray-300"
+                type="button"
+                onClick={handleTogglePassword2}
+              >
+                <i
+                  className={`fas ${showPassword2 ? "fa-eye-slash" : "fa-eye"}`}
+                ></i>
+              </button>
             </div>
             <button
               type="submit"
@@ -166,7 +196,10 @@ const ChangePass: React.FC = () => {
             </button>
           </form>
           {message && (
-            <span className="error text-md mt-5 block text-center">
+            <span
+              key={timestamp}
+              className="error text-md mt-5 block text-center"
+            >
               {message}
             </span>
           )}

@@ -3,7 +3,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../assets/Login.css";
 import { ClipLoader } from "react-spinners";
-import BASE_URL from "../config"; // Import the base URL
+import BASE_URL from "../config";
+import { handleApiError } from "../utils/apiErrorHandler";
 
 interface LoginProps {
   setIsLoggedIn: (loggedIn: boolean) => void;
@@ -42,16 +43,15 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         password,
       });
       const { access_token } = response.data;
+
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("email", email);
       sessionStorage.setItem("logged_user", "true");
       setIsLoggedIn(true);
-      // Redirect or update UI on successful login
       navigate("/cases", { state: { email } });
     } catch (err) {
-      setErrorMessage("Invalid login credentials");
-      setShowError(true); // Mostrar el mensaje de error
-      // Ocultar el mensaje de error después de 3 segundos
+      setErrorMessage(handleApiError(err));
+      setShowError(true);
       setTimeout(() => {
         setShowError(false);
       }, 5000);
@@ -100,7 +100,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   placeholder="Please enter your registered email"
                   value={formData.username}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-tussock-500 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm/6 pl-2"
+                  className="block w-full rounded-md border-0 py-1.5 text-tussock-500  focus:ring-primary-600 focus:border-primary-600 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm/6 pl-2"
                 />
               </div>
             </div>
@@ -132,7 +132,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm/6 pl-2"
+                  className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-primary-600 focus:border-primary-600 placeholder:text-gray-400  sm:text-sm/6 pl-2"
                 />
                 <button
                   type="button"

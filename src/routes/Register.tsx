@@ -24,6 +24,7 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [modalMessage, setModalMessage] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -39,9 +40,6 @@ const Register: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    /* setOtpSent(true);
-    setModalMessage("OTP has been sent to your email.");
-    setModalIsOpen(true); */
 
     try {
       const response = await axios.post(
@@ -86,6 +84,10 @@ const Register: React.FC = () => {
     }
   }, [modalIsOpen]);
 
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="items-center justify-center px-6 py-8 mx-auto ml:h-screen my-3 block">
@@ -100,13 +102,13 @@ const Register: React.FC = () => {
                   htmlFor="first-name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  First Name
+                  First Name:
                 </label>
                 <input
                   type="text"
                   name="firstname"
                   id="first-name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                   required
                   autoComplete="firstname"
                   onChange={handleChange}
@@ -117,7 +119,7 @@ const Register: React.FC = () => {
                   htmlFor="last-name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Last Name
+                  Last Name:
                 </label>
                 <input
                   type="text"
@@ -134,7 +136,7 @@ const Register: React.FC = () => {
                   htmlFor="email"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Email
+                  Email:
                 </label>
                 <input
                   type="email"
@@ -151,7 +153,7 @@ const Register: React.FC = () => {
                   htmlFor="phone"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Phone
+                  Phone:
                 </label>
                 <input
                   type="tel"
@@ -163,38 +165,19 @@ const Register: React.FC = () => {
                   onChange={handleChange}
                 />
               </div>
-
-              {/* <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                  autoComplete="password"
-                  onChange={handleChange}
-                />
-              </div> */}
               <PasswordStrengthChecker
                 name="password"
                 onPasswordChange={handlePasswordChange}
               />
-              <div>
+              <div className="relative">
                 <label
                   htmlFor="confirm-password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Confirm password
+                  Confirm password:
                 </label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="confirm-password"
                   id="confirm-password"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -202,6 +185,17 @@ const Register: React.FC = () => {
                   autoComplete="password"
                   onChange={handleChange}
                 />
+                <button
+                  className="absolute bottom-[3px] right-3 flex items-center text-sm  px-0 text-gray-600 bg-gray-50 border-right border-gray-300"
+                  type="button"
+                  onClick={handleTogglePassword}
+                >
+                  <i
+                    className={`fas ${
+                      showPassword ? "fa-eye-slash" : "fa-eye"
+                    }`}
+                  ></i>
+                </button>
               </div>
               {/* <div className="flex items-start">
                                 <div className="flex items-center h-5">}
