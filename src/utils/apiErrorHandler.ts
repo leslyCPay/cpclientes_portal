@@ -28,12 +28,11 @@ export const handleApiError = (error: unknown): string => {
         JSON.stringify(axiosError.response.data.errors),
         charsToRemove
       );
-      console.log(result);
+      //console.log(result);
       return result;
     } else {
       return (
-        "Error: " +
-        (axiosError.response?.data.message || "Something went wrong")
+        " " + (axiosError.response?.data.message || "Something went wrong")
       );
     }
   }

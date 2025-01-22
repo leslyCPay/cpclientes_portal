@@ -1,4 +1,4 @@
 // config.ts
-const BASE_URL = 'https://itlportaldevback.claimpay.net';
+const BASE_URL = "https://itlportaldevback.itl.legal";
 
 export default BASE_URL;

@@ -15,6 +15,7 @@ const ChangePass: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showPassword2, setShowPassword2] = useState<boolean>(false);
   const [timestamp, setTimestamp] = useState(Date.now());
+  const email = localStorage.getItem("email");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,11 +23,13 @@ const ChangePass: React.FC = () => {
 
     if (newPassword !== confirmPassword) {
       setMessage("New passwords do not match");
+      setLoading(false);
       return;
     }
 
     try {
       const token = localStorage.getItem("access_token");
+
       const response = await axios.post(
         `${BASE_URL}/api/change-password`,
         {
@@ -129,6 +132,13 @@ const ChangePass: React.FC = () => {
             className="mt-4 space-y-4 lg:mt-5 md:space-y-5"
             onSubmit={handleSubmit}
           >
+            <input
+              id="username"
+              type="hidden"
+              name="username"
+              value={email || ""}
+              autoComplete="username"
+            />
             <div className="relative">
               <label
                 htmlFor="current-password"

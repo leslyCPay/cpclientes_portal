@@ -27,6 +27,8 @@ const ForgetPass: React.FC = () => {
       }
     } catch (error) {
       setLoading(false);
+      //console.log(error);
+      //console.log(message);
       setMessage(handleApiError(error));
       setEmail("");
     } finally {

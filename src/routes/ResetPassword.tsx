@@ -65,6 +65,7 @@ const ResetPassword: React.FC = () => {
         setMessage("Error resetting password.");
       }
     } catch (error) {
+      setLoading(false);
       setMessage(handleApiError(error));
     } finally {
       setLoading(false);
