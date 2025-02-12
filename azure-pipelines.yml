@@ -9,7 +9,7 @@ trigger:
   branches:
     include:
       - main
-      - dev-lesly
+      - development
 
 pool:
   name: 'Windows pool DEV'
