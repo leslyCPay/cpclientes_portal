@@ -202,10 +202,10 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
             </div>
           )}
           <p className="mt-10 text-center text-sm/6 text-tussock-200">
-            Not a register yet?{" "}
+            Don't have an account?
             <a
               onClick={() => navigate("/register")}
-              className="font-semibold text-tussock-600 hover:text-tussock-500"
+              className="font-semibold text-tussock-600 hover:text-tussock-500 pl-2 cursor-pointer"
             >
               Register
             </a>

@@ -7,6 +7,7 @@ export default {
     "./pages/**/*.{html,tsx}",
     "./components/**/*.{html,tsx}",
     "node_modules/flowbite/**/*.{js,jsx,ts,tsx}",
+    "node_modules/preline/dist/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
@@ -45,5 +46,5 @@ export default {
       serif: ["Merriweather", "serif"],
     },
   },
-  plugins: [require("flowbite/plugin")],
+  plugins: [require("flowbite/plugin"), require("preline/plugin")],
 };

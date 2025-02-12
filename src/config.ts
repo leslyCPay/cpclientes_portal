@@ -1,4 +1,4 @@
 // config.ts
-const BASE_URL = "https://itlportaldevback.itl.legal";
+const BASE_URL = "http://localhost:8000";
 
 export default BASE_URL;

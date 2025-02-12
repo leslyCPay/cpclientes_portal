@@ -23,13 +23,11 @@ const MainApp: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="flex min-h-screen flex-col">
-        <Header isLoggedIn={isLoggedIn} onSignOut={handleSignOut} />
-        <AppRoutes isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-        <Footer copyrightText={`Copyright © ${currentYear}`} />
-      </div>
-    </>
+    <div className="flex min-h-screen flex-col">
+      <Header isLoggedIn={isLoggedIn} onSignOut={handleSignOut} />
+      <AppRoutes isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <Footer copyrightText={`Copyright © ${currentYear}`} />
+    </div>
   );
 };
 

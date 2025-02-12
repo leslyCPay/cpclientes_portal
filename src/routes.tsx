@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import Login from "./routes/Login";
 import Cases from "./routes/Cases";
 import DetailCase from "./routes/DetailCase";
@@ -26,7 +26,10 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isLoggedIn, setIsLoggedIn }) => {
         path="/cases"
         element={isLoggedIn ? <Cases /> : <Navigate to="/login" />}
       />
-      <Route path="/detail-case/:caseId" element={<DetailCase />} />
+      <Route
+        path="/detail-case/:caseId"
+        element={<DetailCase key={useParams().caseId} />}
+      />
       <Route path="/register" element={<Register />} />
       <Route path="/forget-password" element={<ForgetPass />} />
       <Route
