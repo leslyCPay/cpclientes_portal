@@ -7,7 +7,7 @@ interface DocumentViewerProps {
 const DocumentViewer: React.FC<DocumentViewerProps> = ({ url }) => {
   return (
     <iframe
-      title="Document Viewer"
+      title="Document Viewer "
       src={`https://docs.google.com/viewer?url=${url}&embedded=true`}
       width="100%"
       height="600"
