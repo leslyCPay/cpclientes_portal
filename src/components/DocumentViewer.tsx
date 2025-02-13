@@ -5,10 +5,11 @@ interface DocumentViewerProps {
 }
 
 const DocumentViewer: React.FC<DocumentViewerProps> = ({ url }) => {
+  const encodedUrl = encodeURIComponent(url);
   return (
     <iframe
       title="Document Viewer "
-      src={`https://docs.google.com/viewer?url=${url}&embedded=true`}
+      src={`https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`}
       width="100%"
       height="600"
     />

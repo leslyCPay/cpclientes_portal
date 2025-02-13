@@ -3,6 +3,7 @@ import axios from "axios";
 import BASE_URL from "../config";
 import { HSAccordion, HSTreeView } from "preline";
 import { handleApiError } from "../utils/apiErrorHandler";
+import Loader from "./Loader";
 
 interface TreeNode {
   name: string;
@@ -39,6 +40,7 @@ interface DirectoryTreeProps {
   ) => void;
   selectedFiles: { fileId: number; filename: string; filetype: string }[];
   onFileView: (attachmentId: number) => void; // Callback for viewing a file
+  refreshTree: boolean; // Add refreshTree prop
 }
 
 const TreeView: React.FC<TreeViewProps> = ({
@@ -242,7 +244,6 @@ const TreeView: React.FC<TreeViewProps> = ({
             value: node.name,
             isDir: false,
           })}
-          onClick={handleFileClick}
         >
           <div className="flex items-center gap-x-3">
             <input
@@ -257,7 +258,7 @@ const TreeView: React.FC<TreeViewProps> = ({
               }
             />
             {getFileIcon(node.name)}
-            <div className="grow">
+            <div className="grow" onClick={handleFileClick}>
               <span className="text-sm text-gray-800 dark:text-neutral-200">
                 {node.name}
               </span>
@@ -274,14 +275,11 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
   onFileSelect,
   selectedFiles,
   onFileView,
+  refreshTree,
 }) => {
   const [directoryTree, setDirectoryTree] = useState<TreeNode | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
-
-  /* const handleCheckboxChange = (fileId: string) => {
-    onFileSelect(fileId);
-  }; */
 
   const fetchDocuments = async (caseId: string | null) => {
     if (!caseId) {
@@ -308,7 +306,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
 
   useEffect(() => {
     fetchDocuments(caseId);
-  }, [caseId]);
+  }, [caseId, refreshTree]);
 
   useEffect(() => {
     if (directoryTree) {
@@ -368,7 +366,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
   };
 
   if (!directoryTree) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (
@@ -381,7 +379,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
       "autoSelectChildren": true
     }'
     >
-      {loading && <div>Loading...</div>}
+      {loading && <Loader />}
       {message && (
         <span className="error text-md mt-5 block text-center">{message}</span>
       )}
