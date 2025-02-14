@@ -174,7 +174,9 @@ const DetailCase: React.FC = () => {
       console.error("Download failed:", error);
     } finally {
       setIsDownloading(false);
-      setSelectedFiles([]);
+      setTimeout(() => {
+        setSelectedFiles([]);
+      }, 1800);
     }
   };
 
@@ -188,7 +190,7 @@ const DetailCase: React.FC = () => {
         },
       });
       // Use the temporary URL directly
-      const fileUrl = response.data.url;
+      const fileUrl = `${BASE_URL}${response.data.url}`;
 
       setViewFileUrl(fileUrl);
     } catch (err) {
