@@ -6,6 +6,8 @@ import BASE_URL from "../config"; // Import the base URL
 import ProgressBar from "../components/ProgressBar";
 import DirectoryTree from "../components/DirectoryTree";
 import DocumentViewer from "../components/DocumentViewer";
+import toast, { Toaster } from "react-hot-toast";
+import { HSTabs } from "preline";
 
 const DetailCase: React.FC = () => {
   const { caseId } = useParams<{ caseId: string }>();
@@ -27,6 +29,15 @@ const DetailCase: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [refreshTree, setRefreshTree] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const elements = document.querySelectorAll(".hs-tab, #data-hs-tab"); // Add other Preline.js components here
+    elements.forEach((element) => {
+      if (element) {
+        HSTabs.autoInit();
+      }
+    });
+  });
 
   const handleBackButtonClick = () => {
     navigate(-1);
@@ -95,13 +106,11 @@ const DetailCase: React.FC = () => {
     if (!file) return;
     setIsUploading(true);
 
-    // Create a FormData object to send the file
     const formData = new FormData();
     formData.append("file", file);
     formData.append("record_id", recordId || "");
 
     try {
-      // Send the file to your Laravel backend
       const response = await axios.post(
         `${BASE_URL}/api/upload-file`,
         formData,
@@ -112,6 +121,7 @@ const DetailCase: React.FC = () => {
         }
       );
       console.log("File uploaded successfully:", response.data);
+      toast.success("File uploaded successfully");
 
       // Trigger a refresh of the DirectoryTree
       setRefreshTree((prev) => !prev);
@@ -125,6 +135,7 @@ const DetailCase: React.FC = () => {
       } else {
         console.error("Error uploading file:", error);
       }
+      toast.error("Error uploading file");
     } finally {
       setIsUploading(false); // Stop loading overlay
     }
@@ -566,9 +577,9 @@ const DetailCase: React.FC = () => {
               className={`${activeTab === "docs" ? "block" : "hidden"}`}
             >
               <div className="cp-docs flex flex-col gap-3 min-h-full">
-                <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow  min-h-full justify-center mb-8">
-                  <div className="grid grid-flow-col gap-3">
-                    <div className="col-span-2 md:col-span-1">
+                <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow  min-h-screen justify-center mb-8">
+                  <div className="grid grid-flow-col gap-3 ">
+                    <div className="col-span-2 md:col-span-1 h-100 max-w-max ">
                       <button
                         type="button"
                         className={`m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-tussock-500 text-white hover:bg-tussock-400 focus:outline-none focus:bg-tussock-400 ${
@@ -654,11 +665,32 @@ const DetailCase: React.FC = () => {
                           />
                         </svg>
                       </button>
-                      <div className="mt-8">
-                        {isUploading && (
+                      <div
+                        className="mt-8 mx-3 overflow-y-auto overflow-x-hidden h-[550px] min-w-full [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:rounded-full
+  [&::-webkit-scrollbar-track]:bg-gray-100
+  [&::-webkit-scrollbar-thumb]:rounded-full
+  [&::-webkit-scrollbar-thumb]:bg-gray-300"
+                      >
+                        {isUploading ? (
                           <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-10">
                             <div>Loading...</div> {/* Show loading spinner */}
                           </div>
+                        ) : (
+                          <Toaster
+                            toastOptions={{
+                              success: {
+                                style: {
+                                  background: "bg-green-200",
+                                },
+                              },
+                              error: {
+                                style: {
+                                  background: "bg-red-200",
+                                },
+                              },
+                            }}
+                          />
                         )}
                         <DirectoryTree
                           caseId={caseDetails && caseDetails["case_id"]}
@@ -669,11 +701,16 @@ const DetailCase: React.FC = () => {
                         />
                       </div>
                     </div>
-                    <div className="col-span-2 md:col-span-4 mt-4 xs:w-full">
+                    <div className="col-span-2 md:col-span-4 mt-4 xs:w-full text-center h-[650px] border-2 border-dashed border-gray-300 flex items-center justify-center">
                       {loading ? (
-                        <Loader />
+                        <span className="block text-start">
+                          {" "}
+                          <Loader />
+                        </span>
+                      ) : viewFileUrl ? (
+                        <DocumentViewer url={viewFileUrl} />
                       ) : (
-                        viewFileUrl && <DocumentViewer url={viewFileUrl} />
+                        <span className="text-gray-300">Document Viewer</span>
                       )}
                     </div>
                   </div>

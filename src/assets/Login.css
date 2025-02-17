@@ -18,9 +18,9 @@ button {
 }
 
 .error {
-  color: red;
+  color: #b66729;
   font-family: "Questrial", sans-serif;
-  animation: fadeOut 10s forwards;
+  /* animation: fadeOut 10s forwards; */
 }
 
 .login {

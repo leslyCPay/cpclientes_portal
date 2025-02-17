@@ -293,7 +293,13 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
       const response = await axios.get(
         `${BASE_URL}/api/documents-case?case_id=${caseId}`
       );
-      //console.log(message);
+
+      //console.log(Object.keys(response.data).length);
+
+      if (Object.keys(response.data).length === 0) {
+        setMessage("There's no documents to show");
+        //return;
+      }
 
       const transformedData: TreeNode = transformResponseToTree(response.data);
       setDirectoryTree(transformedData);
@@ -381,7 +387,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
     >
       {loading && <Loader />}
       {message && (
-        <span className="error text-md mt-5 block text-center">{message}</span>
+        <span className="error text-md mt-5 block text-left">{message}</span>
       )}
       {directoryTree.children?.map((child, index) => (
         <TreeView
