@@ -294,17 +294,16 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
         `${BASE_URL}/api/documents-case?case_id=${caseId}`
       );
 
-      //console.log(Object.keys(response.data).length);
-
       if (Object.keys(response.data).length === 0) {
         setMessage("There's no documents to show");
-        //return;
       }
 
       const transformedData: TreeNode = transformResponseToTree(response.data);
       setDirectoryTree(transformedData);
     } catch (error) {
-      setMessage(handleApiError(error));
+      const transformedData: TreeNode = transformResponseToTree({});
+      setDirectoryTree(transformedData);
+      setMessage("There's no documents to show");
     } finally {
       setLoading(false);
     }
@@ -389,7 +388,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
       {message && (
         <span className="error text-md mt-5 block text-left">{message}</span>
       )}
-      {directoryTree.children?.map((child, index) => (
+      {directoryTree?.children?.map((child, index) => (
         <TreeView
           key={index}
           node={child}

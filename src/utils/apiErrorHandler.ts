@@ -28,7 +28,6 @@ export const handleApiError = (error: unknown): string => {
         JSON.stringify(axiosError.response.data.errors),
         charsToRemove
       );
-      //console.log(result);
       return result;
     } else {
       return (
