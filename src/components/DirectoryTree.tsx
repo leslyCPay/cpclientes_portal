@@ -287,6 +287,8 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
       return;
     }
 
+    setMessage("");
+
     setLoading(true);
 
     try {
