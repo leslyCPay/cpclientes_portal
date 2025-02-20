@@ -1,13 +1,20 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
 import BASE_URL from "../config"; // Import the base URL
 import ProgressBar from "../components/ProgressBar";
-import DirectoryTree from "../components/DirectoryTree";
-import DocumentViewer from "../components/DocumentViewer";
+//import DirectoryTree from "../components/DirectoryTree";
+//import DocumentViewer from "../components/DocumentViewer";
 import toast, { Toaster } from "react-hot-toast";
 import { HSTabs } from "preline";
+
+const LazyDirectoryTree = React.lazy(
+  () => import("../components/DirectoryTree")
+);
+const LazyDocumentViewer = React.lazy(
+  () => import("../components/DocumentViewer")
+);
 
 const DetailCase: React.FC = () => {
   const { caseId } = useParams<{ caseId: string }>();
@@ -30,36 +37,38 @@ const DetailCase: React.FC = () => {
   const [refreshTree, setRefreshTree] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const elements = document.querySelectorAll(".hs-tab, #data-hs-tab"); // Add other Preline.js components here
+  useEffect(() => {
+    const elements = document.querySelectorAll(".hs-tab, #data-hs-tab");
     elements.forEach((element) => {
       if (element) {
         HSTabs.autoInit();
       }
     });
-  });
+  }, [activeTab]);
 
   const handleBackButtonClick = () => {
     navigate(-1);
   };
 
   useEffect(() => {
-    const fetchCaseDetails = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/api/details?case_id=${caseId}`
-        );
-        setCaseDetails(response.data);
-        setCurrentStepValue(response.data.step);
-        setlabelStep(response.data.stage);
-        setRecordId(response.data.recordid);
-      } catch (error) {
-        console.error("Error fetching case details:", error);
-      }
-    };
+    if (activeTab === "info" && !caseDetails) {
+      const fetchCaseDetails = async () => {
+        try {
+          const response = await axios.get(
+            `${BASE_URL}/api/details?case_id=${caseId}`
+          );
+          setCaseDetails(response.data);
+          setCurrentStepValue(response.data.step);
+          setlabelStep(response.data.stage);
+          setRecordId(response.data.recordid);
+        } catch (error) {
+          console.error("Error fetching case details:", error);
+        }
+      };
 
-    fetchCaseDetails();
-  }, [caseId]);
+      fetchCaseDetails();
+    }
+  }, [activeTab, caseId, caseDetails]);
 
   interface CurrencyFormatterParams {
     currency: string;
@@ -77,6 +86,13 @@ const DetailCase: React.FC = () => {
     });
     return formatter.format(value);
   };
+
+  const formattedTotalBillAmount = useMemo(() => {
+    return currencyFormatter({
+      currency: "USD",
+      value: caseDetails?.total_bill_amount || 0,
+    });
+  }, [caseDetails?.total_bill_amount]);
 
   const steps = [
     "Pre-Litigation",
@@ -288,7 +304,7 @@ const DetailCase: React.FC = () => {
                 aria-selected={activeTab === "info"}
                 data-hs-tab="#info"
                 aria-controls="info"
-                onClick={() => handleClickTab("info")}
+                onClick={() => setActiveTab("info")}
                 role="tab"
               >
                 Info
@@ -304,7 +320,7 @@ const DetailCase: React.FC = () => {
                 aria-selected={activeTab === "docs"}
                 data-hs-tab="#docs"
                 aria-controls="docs"
-                onClick={() => handleClickTab("docs")}
+                onClick={() => setActiveTab("docs")}
                 role="tab"
               >
                 Docs
@@ -313,410 +329,427 @@ const DetailCase: React.FC = () => {
           </div>
 
           <div className="mt-8">
-            <div
-              id="info"
-              role="tabpanel"
-              aria-labelledby="info"
-              className={`${activeTab === "info" ? "block" : "hidden"}`}
-            >
-              <div className="cp-detailsCase flex flex-col gap-3 min-h-full">
-                <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow border-4 border-amber-600 rounded min-h-full justify-center mb-8">
-                  {caseDetails ? (
-                    <React.Fragment>
-                      <div className="w-full grid grid-cols-1 md:grid-cols-3 pt-4 m-auto">
-                        {/*  {Object.keys(caseDetails).map((key, index) => (                                
+            {activeTab === "info" && (
+              <div
+                id="info"
+                role="tabpanel"
+                aria-labelledby="info"
+                className={`${activeTab === "info" ? "block" : "hidden"}`}
+              >
+                <div className="cp-detailsCase flex flex-col gap-3 min-h-full">
+                  <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow border-4 border-amber-600 rounded min-h-full justify-center mb-8">
+                    {caseDetails ? (
+                      <React.Fragment>
+                        <div className="w-full grid grid-cols-1 md:grid-cols-3 pt-4 m-auto">
+                          {/*  {Object.keys(caseDetails).map((key, index) => (                                
                                   <div className='text-base leading-8 py-4' key={index}>
                                       <p className='text-xs font-semibold text-amber-700 uppercase'>{key.replace(/_/g, " ")}</p>
                                       <p  className='text-md text-gray-500'> {caseDetails['key']}</p>
                                   </div>
                               ))}  */}
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            case id
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["case_id"]}
-                          </p>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              case id
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["case_id"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              status
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["status"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              insured
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["insured"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              address
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["address"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              county
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["county"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              phone
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["phone"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              e-mail
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["e_mail"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              insurance company
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["insurance_company"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              policy number
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["policy_number"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              claim number
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["claim_number"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              date of loss
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["date_of_loss"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              denial reasons
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["denial_reasons"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              total bill amount
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {formattedTotalBillAmount}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              case number
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["case_number"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              Assigned Attorney
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["attorney"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              Legal Assistant
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["case_manager"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              public adjuster
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["public_adjuster"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              final status
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["final_status"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              depo of plaintiff date
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["depo_of_plaintiff_date"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              mediation date
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["mediation_date"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              pfs crn 57 105 status
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["pfs_crn_57_105_status"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              pfs received
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["pfs_received"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              pfs amount
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {formattedTotalBillAmount}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              safe harbor letter received
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["safe_harbor_letter_received"]}
+                            </p>
+                          </div>
+                          <div className="text-base leading-8 py-4">
+                            <p className="text-xs font-semibold text-amber-700 uppercase">
+                              trial date
+                            </p>
+                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
+                              {" "}
+                              {caseDetails["trial_date"]}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            status
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["status"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            insured
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["insured"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            address
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["address"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            county
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["county"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            phone
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["phone"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            e-mail
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["e_mail"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            insurance company
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["insurance_company"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            policy number
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["policy_number"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            claim number
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["claim_number"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            date of loss
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["date_of_loss"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            denial reasons
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["denial_reasons"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            total bill amount
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {currencyFormatter({
-                              currency: "USD",
-                              value: caseDetails["total_bill_amount"],
-                            })}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            case number
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["case_number"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            Assigned Attorney
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["attorney"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            Legal Assistant
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["case_manager"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            public adjuster
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["public_adjuster"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            final status
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["final_status"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            depo of plaintiff date
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["depo_of_plaintiff_date"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            mediation date
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["mediation_date"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            pfs crn 57 105 status
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["pfs_crn_57_105_status"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            pfs received
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["pfs_received"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            pfs amount
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {currencyFormatter({
-                              currency: "USD",
-                              value: caseDetails["pfs_amount"],
-                            })}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            safe harbor letter received
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["safe_harbor_letter_received"]}
-                          </p>
-                        </div>
-                        <div className="text-base leading-8 py-4">
-                          <p className="text-xs font-semibold text-amber-700 uppercase">
-                            trial date
-                          </p>
-                          <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                            {" "}
-                            {caseDetails["trial_date"]}
-                          </p>
-                        </div>
-                      </div>
-                    </React.Fragment>
-                  ) : (
-                    <Loader />
-                  )}
+                      </React.Fragment>
+                    ) : (
+                      <Loader />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div
-              id="docs"
-              role="tabpanel"
-              aria-labelledby="docs"
-              className={`${activeTab === "docs" ? "block" : "hidden"}`}
-            >
-              <div className="cp-docs flex flex-col gap-3 min-h-full">
-                <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow  min-h-screen justify-center mb-8">
-                  <div className="grid grid-flow-col gap-3 ">
-                    <div className="col-span-2 md:col-span-1 h-100 max-w-max ">
-                      <button
-                        type="button"
-                        className={`m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-tussock-500 text-white hover:bg-tussock-400 focus:outline-none focus:bg-tussock-400 ${
-                          selectedFiles.length === 0 || isDownloading
-                            ? "opacity-50 pointer-events-none"
-                            : ""
-                        }`}
-                        disabled={selectedFiles.length === 0 || isDownloading}
-                        onClick={handleDownload}
-                      >
-                        {isDownloading ? (
-                          <>
-                            <svg
-                              aria-hidden="true"
-                              role="status"
-                              className="inline w-4 h-4 me-3 text-white animate-spin"
-                              viewBox="0 0 100 101"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                fill="currentColor"
-                              />
-                              <path
-                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                fill="#B66729"
-                              />
-                            </svg>
-                            Downloading...
-                          </>
-                        ) : (
-                          <>
-                            Download File(s)
-                            <svg
-                              className="w-6 h-6 text-white"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01"
-                              />
-                            </svg>
-                          </>
-                        )}
-                      </button>
-
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        style={{ display: "none" }}
-                        onChange={handleFileUpload}
-                      />
-                      <button
-                        type="button"
-                        className="m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-black text-white hover:bg-gray-800 focus:outline-none focus:bg-gray-800 mt-4 md:mt-0"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        Upload File(s)
-                        <svg
-                          className="w-6 h-6 text-white"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
+            {activeTab === "docs" && (
+              <div
+                id="docs"
+                role="tabpanel"
+                aria-labelledby="docs"
+                className={`${activeTab === "docs" ? "block" : "hidden"}`}
+              >
+                <div className="cp-docs flex flex-col gap-3 min-h-full">
+                  <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow  min-h-screen justify-center mb-8">
+                    <div className="grid grid-flow-col gap-3 ">
+                      <div className="col-span-2 md:col-span-1 h-100 max-w-max ">
+                        <button
+                          type="button"
+                          className={`m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-tussock-500 text-white hover:bg-tussock-400 focus:outline-none focus:bg-tussock-400 ${
+                            selectedFiles.length === 0 || isDownloading
+                              ? "opacity-50 pointer-events-none"
+                              : ""
+                          }`}
+                          disabled={selectedFiles.length === 0 || isDownloading}
+                          onClick={handleDownload}
                         >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 5v9m-5 0H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2M8 9l4-5 4 5m1 8h.01"
-                          />
-                        </svg>
-                      </button>
-                      <div
-                        className="mt-8 mx-3 overflow-y-auto overflow-x-hidden h-[550px] min-w-full [&::-webkit-scrollbar]:w-2
+                          {isDownloading ? (
+                            <>
+                              <svg
+                                aria-hidden="true"
+                                role="status"
+                                className="inline w-4 h-4 me-3 text-white animate-spin"
+                                viewBox="0 0 100 101"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                  fill="currentColor"
+                                />
+                                <path
+                                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                  fill="#B66729"
+                                />
+                              </svg>
+                              Downloading...
+                            </>
+                          ) : (
+                            <>
+                              Download File(s)
+                              <svg
+                                className="w-6 h-6 text-white"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01"
+                                />
+                              </svg>
+                            </>
+                          )}
+                        </button>
+
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          style={{ display: "none" }}
+                          onChange={handleFileUpload}
+                        />
+                        <button
+                          type="button"
+                          className="m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-black text-white hover:bg-gray-800 focus:outline-none focus:bg-gray-800 mt-4 md:mt-0"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          Upload File(s)
+                          <svg
+                            className="w-6 h-6 text-white"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 5v9m-5 0H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2M8 9l4-5 4 5m1 8h.01"
+                            />
+                          </svg>
+                        </button>
+                        <div
+                          className="mt-8 mx-3 overflow-y-auto overflow-x-hidden h-[550px] min-w-full [&::-webkit-scrollbar]:w-2
   [&::-webkit-scrollbar-track]:rounded-full
   [&::-webkit-scrollbar-track]:bg-gray-100
   [&::-webkit-scrollbar-thumb]:rounded-full
   [&::-webkit-scrollbar-thumb]:bg-gray-300"
-                      >
-                        {isUploading ? (
-                          <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-10">
-                            <div>Loading...</div> {/* Show loading spinner */}
-                          </div>
-                        ) : (
-                          <Toaster
-                            toastOptions={{
-                              success: {
-                                style: {
-                                  background: "bg-green-200",
+                        >
+                          {isUploading ? (
+                            <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-10">
+                              <div>Loading...</div> {/* Show loading spinner */}
+                            </div>
+                          ) : (
+                            <Toaster
+                              toastOptions={{
+                                success: {
+                                  style: {
+                                    background: "bg-green-200",
+                                  },
                                 },
-                              },
-                              error: {
-                                style: {
-                                  background: "bg-red-200",
+                                error: {
+                                  style: {
+                                    background: "bg-red-200",
+                                  },
                                 },
-                              },
-                            }}
-                          />
-                        )}
-                        <DirectoryTree
-                          caseId={caseDetails && caseDetails["case_id"]}
-                          onFileSelect={handleFileSelect}
-                          selectedFiles={selectedFiles}
-                          onFileView={handleFileView}
-                          refreshTree={refreshTree}
-                        />
+                              }}
+                            />
+                          )}
+                          {/* <DirectoryTree
+                            caseId={caseDetails && caseDetails["case_id"]}
+                            onFileSelect={handleFileSelect}
+                            selectedFiles={selectedFiles}
+                            onFileView={handleFileView}
+                            refreshTree={refreshTree}
+                          /> */}
+
+                          <Suspense fallback={<Loader />}>
+                            <LazyDirectoryTree
+                              caseId={caseDetails?.case_id}
+                              onFileSelect={handleFileSelect}
+                              selectedFiles={selectedFiles}
+                              onFileView={handleFileView}
+                              refreshTree={refreshTree}
+                            />
+                          </Suspense>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-span-2 md:col-span-4 mt-4 xs:w-full text-center h-[650px] border-2 border-dashed border-gray-300 flex items-center justify-center">
-                      {loading ? (
-                        <span className="block text-start">
-                          {" "}
-                          <Loader />
-                        </span>
-                      ) : viewFileUrl ? (
-                        <DocumentViewer url={viewFileUrl} />
-                      ) : (
-                        <span className="text-gray-300">Document Viewer</span>
-                      )}
+                      <div className="col-span-2 md:col-span-4 mt-4 xs:w-full text-center h-[650px] border-2 border-dashed border-gray-300 flex items-center justify-center">
+                        {/* {loading ? (
+                          <span className="block text-start">
+                            {" "}
+                            <Loader />
+                          </span>
+                        ) : viewFileUrl ? (
+                          <DocumentViewer url={viewFileUrl} />
+                        ) : (
+                          <span className="text-gray-300">Document Viewer</span>
+                        )} */}
+                        <Suspense fallback={<Loader />}>
+                          {viewFileUrl ? (
+                            <LazyDocumentViewer url={viewFileUrl} />
+                          ) : (
+                            <span className="text-gray-300">
+                              Document Viewer
+                            </span>
+                          )}
+                        </Suspense>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* END TABS */}
