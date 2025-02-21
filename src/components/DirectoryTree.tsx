@@ -31,7 +31,7 @@ interface TreeViewProps {
 }
 
 interface DirectoryTreeProps {
-  caseId: string | null;
+  caseId: string | null | undefined;
   onFileSelect: (
     fileId: number,
     filename: string,
@@ -281,7 +281,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchDocuments = async (caseId: string | null) => {
+  const fetchDocuments = async (caseId: string | null | undefined) => {
     if (!caseId) {
       //setMessage("Case ID is null");
       return;

@@ -10,9 +10,6 @@ interface Props {
 
 const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
   const navigate = useNavigate();
-  /*  const goToCaseDetails = (caseId: string) => {
-    navigate(`/detail-case/${caseId}`);
-  }; */
 
   const goToCaseDetails = (caseId: string, activeTab: string = "info") => {
     navigate(`/detail-case/${caseId}?tab=${activeTab}`);

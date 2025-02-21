@@ -2,19 +2,21 @@ import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
-import BASE_URL from "../config"; // Import the base URL
+import BASE_URL from "../config";
 import ProgressBar from "../components/ProgressBar";
-//import DirectoryTree from "../components/DirectoryTree";
-//import DocumentViewer from "../components/DocumentViewer";
 import toast, { Toaster } from "react-hot-toast";
 import { HSTabs } from "preline";
+import ErrorBoundary from "../components/ErrorBoundary";
 
-const LazyDirectoryTree = React.lazy(
-  () => import("../components/DirectoryTree")
-);
-const LazyDocumentViewer = React.lazy(
-  () => import("../components/DocumentViewer")
-);
+const LazyDirectoryTree = React.lazy(() => {
+  //console.log("Loading DirectoryTree...");
+  return import("../components/DirectoryTree");
+});
+
+const LazyDocumentViewer = React.lazy(() => {
+  //console.log("Loading DocumentViewer...");
+  return import("../components/DocumentViewer");
+});
 
 const DetailCase: React.FC = () => {
   const { caseId } = useParams<{ caseId: string }>();
@@ -37,6 +39,10 @@ const DetailCase: React.FC = () => {
   const [refreshTree, setRefreshTree] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const handleBackButtonClick = () => {
+    navigate("/cases");
+  };
+
   useEffect(() => {
     const elements = document.querySelectorAll(".hs-tab, #data-hs-tab");
     elements.forEach((element) => {
@@ -44,13 +50,7 @@ const DetailCase: React.FC = () => {
         HSTabs.autoInit();
       }
     });
-  }, [activeTab]);
 
-  const handleBackButtonClick = () => {
-    navigate(-1);
-  };
-
-  useEffect(() => {
     if (activeTab === "info" && !caseDetails) {
       const fetchCaseDetails = async () => {
         try {
@@ -108,10 +108,11 @@ const DetailCase: React.FC = () => {
   // Update the active tab if the query parameter changes
   useEffect(() => {
     setActiveTab(activeTabFromQuery);
-  }, [activeTabFromQuery]);
+  }, [location.search]);
 
   const handleClickTab = (tab: string) => {
     setActiveTab(tab);
+    navigate(`/detail-case/${caseId}?tab=${tab}`);
   };
 
   // Function to handle file selection and upload
@@ -153,7 +154,7 @@ const DetailCase: React.FC = () => {
       }
       toast.error("Error uploading file");
     } finally {
-      setIsUploading(false); // Stop loading overlay
+      setIsUploading(false);
     }
   };
 
@@ -179,7 +180,7 @@ const DetailCase: React.FC = () => {
     try {
       const response = await axios.post(
         `${BASE_URL}/api/download-files`,
-        { files: selectedFiles }, // Send selected files with metadata
+        { files: selectedFiles },
         { responseType: "blob" }
       );
 
@@ -232,14 +233,14 @@ const DetailCase: React.FC = () => {
       <div className="mx-auto min-h-screen bg-amber-100">
         <div className="cp-breadcrumbs">
           <nav
-            className="flex bg-gray-50 text-tussock-600 border border-gray-200 py-3 px-5 rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="flex bg-gray-50 text-tussock-600 border border-gray-200 py-3 px-5 rounded-lg"
             aria-label="Breadcrumb"
           >
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
               <li className="inline-flex items-center">
                 <a
                   onClick={handleBackButtonClick}
-                  className="text-sm text-tussock-600 hover:text-tussock-900 inline-flex items-center dark:text-gray-400 dark:hover:text-white"
+                  className="text-sm text-tussock-600 hover:text-tussock-900 inline-flex items-center cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4 mr-2"
@@ -304,7 +305,7 @@ const DetailCase: React.FC = () => {
                 aria-selected={activeTab === "info"}
                 data-hs-tab="#info"
                 aria-controls="info"
-                onClick={() => setActiveTab("info")}
+                onClick={() => handleClickTab("info")}
                 role="tab"
               >
                 Info
@@ -320,7 +321,7 @@ const DetailCase: React.FC = () => {
                 aria-selected={activeTab === "docs"}
                 data-hs-tab="#docs"
                 aria-controls="docs"
-                onClick={() => setActiveTab("docs")}
+                onClick={() => handleClickTab("docs")}
                 role="tab"
               >
                 Docs
@@ -705,36 +706,24 @@ const DetailCase: React.FC = () => {
                               }}
                             />
                           )}
-                          {/* <DirectoryTree
-                            caseId={caseDetails && caseDetails["case_id"]}
-                            onFileSelect={handleFileSelect}
-                            selectedFiles={selectedFiles}
-                            onFileView={handleFileView}
-                            refreshTree={refreshTree}
-                          /> */}
 
                           <Suspense fallback={<Loader />}>
-                            <LazyDirectoryTree
-                              caseId={caseDetails?.case_id}
-                              onFileSelect={handleFileSelect}
-                              selectedFiles={selectedFiles}
-                              onFileView={handleFileView}
-                              refreshTree={refreshTree}
-                            />
+                            {activeTab === "docs" && (
+                              <ErrorBoundary>
+                                <LazyDirectoryTree
+                                  key={activeTab}
+                                  caseId={caseId}
+                                  onFileSelect={handleFileSelect}
+                                  selectedFiles={selectedFiles}
+                                  onFileView={handleFileView}
+                                  refreshTree={refreshTree}
+                                />
+                              </ErrorBoundary>
+                            )}
                           </Suspense>
                         </div>
                       </div>
                       <div className="col-span-2 md:col-span-4 mt-4 xs:w-full text-center h-[650px] border-2 border-dashed border-gray-300 flex items-center justify-center">
-                        {/* {loading ? (
-                          <span className="block text-start">
-                            {" "}
-                            <Loader />
-                          </span>
-                        ) : viewFileUrl ? (
-                          <DocumentViewer url={viewFileUrl} />
-                        ) : (
-                          <span className="text-gray-300">Document Viewer</span>
-                        )} */}
                         <Suspense fallback={<Loader />}>
                           {viewFileUrl ? (
                             <LazyDocumentViewer url={viewFileUrl} />
