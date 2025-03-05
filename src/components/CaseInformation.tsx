@@ -11,8 +11,14 @@ interface Props {
 const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
   const navigate = useNavigate();
 
-  const goToCaseDetails = (caseId: string, activeTab: string = "info") => {
-    navigate(`/detail-case/${caseId}?tab=${activeTab}`);
+  const goToCaseDetails = (
+    caseId: string,
+    activeTab: string = "info",
+    state: string = ""
+  ) => {
+    navigate(`/detail-case/${caseId}?tab=${activeTab}`, {
+      state: { state },
+    });
   };
 
   return (
@@ -20,19 +26,23 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
       className="bg-tussock-300 border-b border-tussock-500"
       key={arepons.case_id}
     >
-      {Object.entries(arepons).map(([key, value]) => (
-        <td
-          scope="row"
-          className="px-6 py-4 text-blue-50 whitespace-nowrap dark:text-blue-100 font-semibold uppercase"
-          key={key}
-        >
-          {value}
-        </td>
-      ))}
+      {Object.entries(arepons)
+        .filter(([key]) => key !== "state")
+        .map(([key, value]) => (
+          <td
+            scope="row"
+            className="px-6 py-4 text-blue-50 whitespace-nowrap dark:text-blue-100 font-semibold uppercase"
+            key={key}
+          >
+            {value}
+          </td>
+        ))}
       <td className="px-6 py-4" key={arepons.case_id}>
         <button
           key={arepons.case_id}
-          onClick={() => goToCaseDetails(arepons.case_id, "info")}
+          onClick={() =>
+            goToCaseDetails(arepons.case_id, "info", arepons.state)
+          }
           type="button"
           className="w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center"
         >
@@ -56,7 +66,9 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
         <button
           type="button"
           key={"docs_" + arepons.case_id}
-          onClick={() => goToCaseDetails(arepons.case_id, "docs")}
+          onClick={() =>
+            goToCaseDetails(arepons.case_id, "docs", arepons.state)
+          }
           className=" docs-button w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center mx-1"
         >
           <svg

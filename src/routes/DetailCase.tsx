@@ -39,9 +39,13 @@ const DetailCase: React.FC = () => {
   const [refreshTree, setRefreshTree] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const state = location.state?.state || "";
+
   const handleBackButtonClick = () => {
     navigate("/cases");
   };
+
+  //console.log(caseId);
 
   useEffect(() => {
     const elements = document.querySelectorAll(".hs-tab, #data-hs-tab");
@@ -55,7 +59,7 @@ const DetailCase: React.FC = () => {
       const fetchCaseDetails = async () => {
         try {
           const response = await axios.get(
-            `${BASE_URL}/api/details?case_id=${caseId}`
+            `${BASE_URL}/api/details?case_id=${caseId}&state=${state}`
           );
           setCaseDetails(response.data);
           setCurrentStepValue(response.data.step);

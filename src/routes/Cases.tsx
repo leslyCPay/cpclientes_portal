@@ -10,6 +10,7 @@ interface ApiResponse {
   case_id: string;
   case_number: string;
   claim_number: string;
+  state: string;
 }
 
 interface NameResponse {
@@ -112,6 +113,8 @@ const Cases: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  console.log(data);
 
   return (
     <div className="cases-list bg-amber-100 flex min-h-screen">
