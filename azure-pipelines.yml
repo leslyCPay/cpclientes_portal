@@ -3,8 +3,6 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-
-
 trigger:
   branches:
     include:
@@ -12,34 +10,30 @@ trigger:
       - development
 
 pool:
-  name: 'Windows pool DEV'
-  
+  name: "Windows pool DEV"
+
 steps:
+  - task: Docker@2
+    inputs:
+      command: "login"
+      containerRegistry: "acrServiceConnection2"
+      displayName: "ACR Login"
 
-- task: Docker@2
-  inputs:
-    command: 'login'
-    containerRegistry: 'acrServiceConnection'
-    displayName: 'ACR Login'
+  # - script: |
+  #     docker pull cmprg1citacr001.azurecr.io/test:v7
+  #   displayName: 'Docker Pull v7'
 
-# - script: |
-#     docker pull cmprg1citacr001.azurecr.io/test:v7
-#   displayName: 'Docker Pull v7'
+  - task: Docker@2
+    inputs:
+      repository: "clients_portal_frontend"
+      command: "build"
+      Dockerfile: "Dockerfile" # Asegúrate de tener un Dockerfile en la ubicación correcta
+      tags: "$(Build.BuildId)"
+      displayName: "Docker Build"
 
-- task: Docker@2
-  inputs:
-    repository: 'clients_portal_frontend'
-    command: 'build'
-    Dockerfile: 'Dockerfile'  # Asegúrate de tener un Dockerfile en la ubicación correcta
-    tags: '$(Build.BuildId)'
-    displayName: 'Docker Build'
-
-- task: Docker@2
-  inputs:
-    repository: 'clients_portal_frontend'
-    command: 'push'
-    tags: '$(Build.BuildId)'
-    displayName: 'Docker Push'
-
-
-
+  - task: Docker@2
+    inputs:
+      repository: "clients_portal_frontend"
+      command: "push"
+      tags: "$(Build.BuildId)"
+      displayName: "Docker Push"
