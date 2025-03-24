@@ -14,8 +14,13 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
   const goToCaseDetails = (
     caseId: string,
     activeTab: string = "info",
-    state: string = ""
+    state: string = "",
+    record_id: string = ""
   ) => {
+    if (activeTab == "docs") {
+      sessionStorage.setItem("record_id", record_id);
+    }
+
     navigate(`/detail-case/${caseId}?tab=${activeTab}`, {
       state: { state },
     });
@@ -28,6 +33,7 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
     >
       {Object.entries(arepons)
         .filter(([key]) => key !== "state")
+        .filter(([key]) => key !== "recordid")
         .map(([key, value]) => (
           <td
             scope="row"
@@ -41,7 +47,12 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
         <button
           key={arepons.case_id}
           onClick={() =>
-            goToCaseDetails(arepons.case_id, "info", arepons.state)
+            goToCaseDetails(
+              arepons.case_id,
+              "info",
+              arepons.state,
+              arepons.recordid
+            )
           }
           type="button"
           className="w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center"
@@ -67,7 +78,12 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
           type="button"
           key={"docs_" + arepons.case_id}
           onClick={() =>
-            goToCaseDetails(arepons.case_id, "docs", arepons.state)
+            goToCaseDetails(
+              arepons.case_id,
+              "docs",
+              arepons.state,
+              arepons.recordid
+            )
           }
           className=" docs-button w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center mx-1"
         >

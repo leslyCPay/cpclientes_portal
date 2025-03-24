@@ -29,7 +29,7 @@ const DetailCase: React.FC = () => {
   const activeTabFromQuery = queryParams.get("tab") || "info";
   const [activeTab, setActiveTab] = useState(activeTabFromQuery);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [recordId, setRecordId] = useState<string>("");
+  const [recordId, setRecordId] = useState<string | null>("");
   const [selectedFiles, setSelectedFiles] = useState<
     { fileId: number; filename: string; filetype: string }[]
   >([]);
@@ -112,6 +112,11 @@ const DetailCase: React.FC = () => {
   // Update the active tab if the query parameter changes
   useEffect(() => {
     setActiveTab(activeTabFromQuery);
+    if (activeTabFromQuery == "docs") {
+      const recordid = sessionStorage.getItem("record_id");
+      setRecordId(recordid);
+    }
+    console.log(activeTabFromQuery);
   }, [location.search]);
 
   const handleClickTab = (tab: string) => {
