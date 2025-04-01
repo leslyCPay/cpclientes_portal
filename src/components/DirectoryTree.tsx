@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BASE_URL from "../config";
 import { HSAccordion, HSTreeView } from "preline";
-import { handleApiError } from "../utils/apiErrorHandler";
 import Loader from "./Loader";
 
 interface TreeNode {
@@ -27,7 +26,7 @@ interface TreeViewProps {
     isSelected: boolean
   ) => void;
   selectedFiles: { fileId: number; filename: string; filetype: string }[];
-  onFileView: (attachmentId: number) => void; // Callback for viewing a file
+  onFileView: (attachmentId: number) => void;
 }
 
 interface DirectoryTreeProps {
@@ -39,8 +38,8 @@ interface DirectoryTreeProps {
     isSelected: boolean
   ) => void;
   selectedFiles: { fileId: number; filename: string; filetype: string }[];
-  onFileView: (attachmentId: number) => void; // Callback for viewing a file
-  refreshTree: boolean; // Add refreshTree prop
+  onFileView: (attachmentId: number) => void;
+  refreshTree: boolean;
 }
 
 const TreeView: React.FC<TreeViewProps> = ({
@@ -150,7 +149,7 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   const handleFileClick = () => {
     if (node.file?.attachmentsid) {
-      onFileView(node.file.attachmentsid); // Call the onFileView callback with the attachment ID
+      onFileView(node.file.attachmentsid);
     }
   };
 

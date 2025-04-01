@@ -146,7 +146,7 @@ const DetailCase: React.FC = () => {
           },
         }
       );
-      console.log("File uploaded successfully:", response.data);
+      //console.log("File uploaded successfully:", response.data);
       toast.success("File uploaded successfully");
 
       // Trigger a refresh of the DirectoryTree
