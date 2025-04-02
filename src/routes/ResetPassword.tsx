@@ -50,8 +50,6 @@ const ResetPassword: React.FC = () => {
         password_confirmation: confirmPassword,
       });
 
-      console.log(response);
-
       if (response.data.success) {
         setMessage("Password reset successfully.");
         setEmail("");

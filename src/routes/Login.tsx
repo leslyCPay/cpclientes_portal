@@ -50,7 +50,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       setIsLoggedIn(true);
       navigate("/cases", { state: { email } });
     } catch (err) {
-      console.log(err);
+      //console.log(err);
       setErrorMessage(handleApiError(err));
       setShowError(true);
       setTimeout(() => {

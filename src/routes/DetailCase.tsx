@@ -66,7 +66,7 @@ const DetailCase: React.FC = () => {
           setlabelStep(response.data.stage);
           setRecordId(response.data.recordid);
         } catch (error) {
-          console.error("Error fetching case details:", error);
+          //console.error("Error fetching case details:", error);
         }
       };
 
@@ -116,7 +116,6 @@ const DetailCase: React.FC = () => {
       const recordid = sessionStorage.getItem("record_id");
       setRecordId(recordid);
     }
-    console.log(activeTabFromQuery);
   }, [location.search]);
 
   const handleClickTab = (tab: string) => {
@@ -159,7 +158,7 @@ const DetailCase: React.FC = () => {
           status: error.response?.status,
         });
       } else {
-        console.error("Error uploading file:", error);
+        //console.error("Error uploading file:", error);
       }
       toast.error("Error uploading file");
     } finally {

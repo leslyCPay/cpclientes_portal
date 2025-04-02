@@ -103,7 +103,7 @@ const Cases: React.FC = () => {
         //setError(`Failed to fetch data for names: ${failedResponses.map(fr => fr.name).join(', ')}`);
       }
     } catch (error) {
-      console.error("Error fetching cases:", error);
+      //console.error("Error fetching cases:", error);
       setError("Failed to fetch cases.");
     } finally {
       setLoading(false);
@@ -113,8 +113,6 @@ const Cases: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  console.log(data);
 
   return (
     <div className="cases-list bg-amber-100 flex min-h-screen">
