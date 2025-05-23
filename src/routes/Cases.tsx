@@ -13,6 +13,15 @@ interface ApiResponse {
   state: string;
 }
 
+/*{
+        "casesid": 395098,
+        "case_id": "PDC25-000024",
+        "claim_number": "47849165",
+        "stage": "Pre-Litigation",
+        "type_of_claim": "HO",
+        "state": "FL"
+    },*/
+
 interface NameResponse {
   names: string[];
 }
@@ -49,7 +58,7 @@ const Cases: React.FC = () => {
     try {
       // First API call to get names using the email
       const nameResponse = await axios.get<NameResponse>(
-        `${BASE_URL}/api/emailInsured?email=${email}`,
+        `${BASE_URL}/api/cases?email=${email}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -63,7 +72,11 @@ const Cases: React.FC = () => {
         throw new Error("Expected an array of names");
       }
 
-      const requests = names.map((name) => {
+      setData(names);
+
+      //console.log(names);
+
+      /*const requests = names.map((name) => {
         const url = `${BASE_URL}/api/cases?names=${name}`;
         return axios
           .get<ApiResponse[]>(url, {
@@ -101,7 +114,7 @@ const Cases: React.FC = () => {
       if (failedResponses.length) {
         //console.log('hello');
         //setError(`Failed to fetch data for names: ${failedResponses.map(fr => fr.name).join(', ')}`);
-      }
+      }*/
     } catch (error) {
       //console.error("Error fetching cases:", error);
       setError("Failed to fetch cases.");
@@ -139,9 +152,9 @@ const Cases: React.FC = () => {
                     <th scope="col" className="px-6 py-3">
                       Claim Number
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    {/*    <th scope="col" className="px-6 py-3">
                       Case Status
-                    </th>
+                    </th> */}
                     <th scope="col" className="px-6 py-3">
                       Actions
                     </th>

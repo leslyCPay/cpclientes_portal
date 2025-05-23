@@ -7,6 +7,7 @@ import ProgressBar from "../components/ProgressBar";
 import toast, { Toaster } from "react-hot-toast";
 import { HSTabs } from "preline";
 import ErrorBoundary from "../components/ErrorBoundary";
+import ContactPopup from "../components/ContactPopup";
 
 const LazyDirectoryTree = React.lazy(() => {
   //console.log("Loading DirectoryTree...");
@@ -61,10 +62,11 @@ const DetailCase: React.FC = () => {
           const response = await axios.get(
             `${BASE_URL}/api/details?case_id=${caseId}&state=${state}`
           );
-          setCaseDetails(response.data);
-          setCurrentStepValue(response.data.step);
-          setlabelStep(response.data.stage);
-          setRecordId(response.data.recordid);
+
+          setCaseDetails(response.data[0]);
+          setCurrentStepValue(response.data[0].step);
+          setlabelStep(response.data[0].stage);
+          setRecordId(response.data[0].casesid);
         } catch (error) {
           //console.error("Error fetching case details:", error);
         }
@@ -365,7 +367,7 @@ const DetailCase: React.FC = () => {
                               {caseDetails["case_id"]}
                             </p>
                           </div>
-                          <div className="text-base leading-8 py-4">
+                          {/*   <div className="text-base leading-8 py-4">
                             <p className="text-xs font-semibold text-amber-700 uppercase">
                               status
                             </p>
@@ -373,7 +375,7 @@ const DetailCase: React.FC = () => {
                               {" "}
                               {caseDetails["status"]}
                             </p>
-                          </div>
+                          </div> */}
                           <div className="text-base leading-8 py-4">
                             <p className="text-xs font-semibold text-amber-700 uppercase">
                               insured
@@ -407,7 +409,7 @@ const DetailCase: React.FC = () => {
                             </p>
                             <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
                               {" "}
-                              {caseDetails["phone"]}
+                              {caseDetails["insured_phone"]}
                             </p>
                           </div>
                           <div className="text-base leading-8 py-4">
@@ -416,7 +418,7 @@ const DetailCase: React.FC = () => {
                             </p>
                             <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
                               {" "}
-                              {caseDetails["e_mail"]}
+                              {caseDetails["insured_email"]}
                             </p>
                           </div>
                           <div className="text-base leading-8 py-4">
@@ -466,13 +468,14 @@ const DetailCase: React.FC = () => {
                           </div>
                           <div className="text-base leading-8 py-4">
                             <p className="text-xs font-semibold text-amber-700 uppercase">
-                              total bill amount
+                              final status
                             </p>
                             <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
                               {" "}
-                              {formattedTotalBillAmount}
+                              {caseDetails["final_status"]}
                             </p>
                           </div>
+
                           <div className="text-base leading-8 py-4">
                             <p className="text-xs font-semibold text-amber-700 uppercase">
                               case number
@@ -495,9 +498,37 @@ const DetailCase: React.FC = () => {
                             <p className="text-xs font-semibold text-amber-700 uppercase">
                               Legal Assistant
                             </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["case_manager"]}
+                            <p className="text-md text-gray-500 pr-5 ">
+                              <ContactPopup
+                                email={
+                                  caseDetails["case_manager_email"] ||
+                                  "Not available"
+                                }
+                                phone={
+                                  caseDetails["case_manager_phone"] ||
+                                  "Not available"
+                                }
+                              >
+                                <a className="inline-flex align-middle items-start text-blue-800 cursor-pointer">
+                                  <i className="pt-1.5">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                      className="size-5"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  </i>
+                                  <span className="pl-2 uppercase font-semibold">
+                                    {caseDetails["case_manager_name"]}
+                                  </span>
+                                </a>
+                              </ContactPopup>
                             </p>
                           </div>
                           <div className="text-base leading-8 py-4">
@@ -509,15 +540,7 @@ const DetailCase: React.FC = () => {
                               {caseDetails["public_adjuster"]}
                             </p>
                           </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              final status
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["final_status"]}
-                            </p>
-                          </div>
+
                           <div className="text-base leading-8 py-4">
                             <p className="text-xs font-semibold text-amber-700 uppercase">
                               depo of plaintiff date

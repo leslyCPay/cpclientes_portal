@@ -8,6 +8,15 @@ interface Props {
   [key: string]: any;
 }
 
+/*{
+        "casesid": 395098,
+        "case_id": "PDC25-000024",
+        "claim_number": "47849165",
+        "stage": "Pre-Litigation",
+        "type_of_claim": "HO",
+        "state": "FL"
+    },*/
+
 const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
   const navigate = useNavigate();
 
@@ -32,8 +41,10 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
       key={arepons.case_id}
     >
       {Object.entries(arepons)
+        .filter(([key]) => key !== "id")
+        .filter(([key]) => key !== "type_of_claim")
         .filter(([key]) => key !== "state")
-        .filter(([key]) => key !== "recordid")
+        .filter(([key]) => key !== "stage")
         .map(([key, value]) => (
           <td
             scope="row"
@@ -47,12 +58,7 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
         <button
           key={arepons.case_id}
           onClick={() =>
-            goToCaseDetails(
-              arepons.case_id,
-              "info",
-              arepons.state,
-              arepons.recordid
-            )
+            goToCaseDetails(arepons.case_id, "info", arepons.state, arepons.id)
           }
           type="button"
           className="w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center"
@@ -78,12 +84,7 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
           type="button"
           key={"docs_" + arepons.case_id}
           onClick={() =>
-            goToCaseDetails(
-              arepons.case_id,
-              "docs",
-              arepons.state,
-              arepons.recordid
-            )
+            goToCaseDetails(arepons.case_id, "docs", arepons.state, arepons.id)
           }
           className=" docs-button w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center mx-1"
         >
