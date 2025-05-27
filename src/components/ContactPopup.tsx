@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiCopy, FiMail, FiPhone } from "react-icons/fi"; // Install with: npm install react-icons
+import { FiCopy, FiMail, FiPhone } from "react-icons/fi";
 
 interface ContactPopupProps {
   email: string;
@@ -29,7 +29,7 @@ const ContactPopup = ({ email, phone, children }: ContactPopupProps) => {
 
       {isVisible && (
         <div
-          className="absolute z-50 left-0 mt-2 w-64 bg-white rounded-md shadow-lg border border-gray-200 p-3"
+          className="absolute z-50 left-0 mt-1 w-64 bg-white rounded-md shadow-lg border border-gray-200 p-3"
           onMouseEnter={() => setIsVisible(true)}
           onMouseLeave={() => setIsVisible(false)}
         >
