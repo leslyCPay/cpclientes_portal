@@ -26,9 +26,9 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
     state: string = "",
     record_id: string = ""
   ) => {
-    if (activeTab == "docs") {
-      sessionStorage.setItem("record_id", record_id);
-    }
+    //if (activeTab == "docs") {
+    sessionStorage.setItem("record_id", record_id);
+    // }
 
     navigate(`/detail-case/${caseId}?tab=${activeTab}`, {
       state: { state },
