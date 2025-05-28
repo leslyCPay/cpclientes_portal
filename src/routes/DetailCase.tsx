@@ -498,7 +498,7 @@ const DetailCase: React.FC = () => {
                             <p className="text-xs font-semibold text-amber-700 uppercase">
                               Legal Assistant
                             </p>
-                            <p className="text-md text-gray-500 pr-5 ">
+                            <div className="text-md text-gray-500 pr-5 ">
                               <ContactPopup
                                 email={
                                   caseDetails["case_manager_email"] ||
@@ -529,7 +529,7 @@ const DetailCase: React.FC = () => {
                                   </span>
                                 </a>
                               </ContactPopup>
-                            </p>
+                            </div>
                           </div>
                           <div className="text-base leading-8 py-4">
                             <p className="text-xs font-semibold text-amber-700 uppercase">
