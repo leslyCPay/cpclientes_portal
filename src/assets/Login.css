@@ -1,6 +1,6 @@
-@import url("https://fonts.googleapis.com/css?family=Questrial");
+@import url("https://fonts.googleapis.com/css?family=Inter");
 .login-container {
-  font-family: "Questrial", sans-serif;
+  font-family: "Inter", sans-serif;
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
@@ -19,14 +19,17 @@ button {
 
 .error {
   color: #b66729;
-  font-family: "Questrial", sans-serif;
+  font-family: "Inter", sans-serif;
   /* animation: fadeOut 10s forwards; */
 }
 
 .login {
-  background-image: linear-gradient(#1f2120e0, #1f2120e0),
+  background-image:
+    linear-gradient(#1f2120e0, #1f2120e0),
     url(https://cdn.prod.website-files.com/66bbb545d353c3a7e92ecca8/66c39fabe37c5723a303b93b_Florida%20Suburbs%20Image.avif);
-  background-position: 0 0, 0 0;
+  background-position:
+    0 0,
+    0 0;
   background-size: auto, cover;
   /* padding-top: 15em; */
   /* padding-bottom: 15em;*/

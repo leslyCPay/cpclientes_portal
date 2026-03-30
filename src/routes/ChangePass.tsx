@@ -4,6 +4,7 @@ import axios from "axios";
 import BASE_URL from "../config";
 import { handleApiError } from "../utils/apiErrorHandler";
 import PasswordStrengthChecker from "../components/PasswordStrengthChecker";
+import { Eye, EyeOff, ArrowLeft, Home, ChevronRight } from "lucide-react";
 
 const ChangePass: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const ChangePass: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("error");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showPassword2, setShowPassword2] = useState<boolean>(false);
@@ -23,6 +25,7 @@ const ChangePass: React.FC = () => {
 
     if (newPassword !== confirmPassword) {
       setMessage("New passwords do not match");
+      setMessageType("error");
       setLoading(false);
       return;
     }
@@ -41,19 +44,22 @@ const ChangePass: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
         setMessage("Password changed successfully");
+        setMessageType("success");
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
         setMessage("Error changing password");
+        setMessageType("error");
       }
     } catch (error) {
       setMessage(handleApiError(error));
+      setMessageType("error");
     } finally {
       setLoading(false);
       setTimestamp(Date.now());
@@ -68,154 +74,186 @@ const ChangePass: React.FC = () => {
     navigate("/cases");
   };
 
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleTogglePassword2 = () => {
-    setShowPassword2(!showPassword2);
-  };
-
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="cp-breadcrumbs">
-        <nav
-          className="flex bg-gray-50 text-tussock-600 border border-gray-200 py-3 px-5  dark:bg-gray-800 dark:border-gray-700"
-          aria-label="Breadcrumb"
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex flex-col">
+      {/* Breadcrumbs */}
+      {/*     <div className="flex items-center gap-2 text-sm px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
+        <button
+          onClick={handleCasesClick}
+          className="flex items-center gap-1 text-amber-600 hover:text-amber-700 transition-colors"
         >
-          <ol className="inline-flex items-center space-x-1 md:space-x-3">
-            <li className="inline-flex items-center">
-              <a
-                onClick={handleCasesClick}
-                className="text-sm text-tussock-600 hover:text-tussock-900 inline-flex items-center dark:text-gray-400 dark:hover:text-white"
-              >
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                </svg>
-                Home
-              </a>
-            </li>
-            <li aria-current="page">
-              <div className="flex items-center">
-                <svg
-                  className="w-6 h-6 text-tussock-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span className="text-tussock-400 ml-1 md:ml-2 text-sm font-medium dark:text-gray-500">
-                  Change Password
-                </span>
-              </div>
-            </li>
-          </ol>
-        </nav>
-      </div>
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <div className="w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
-          <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center">
-            Change Password
-          </h2>
-          <form
-            id="insured-change-pass"
-            className="mt-4 space-y-4 lg:mt-5 md:space-y-5"
-            onSubmit={handleSubmit}
+          <Home className="w-4 h-4" />
+          Home
+        </button>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
+        <span className="text-gray-600">Change Password</span>
+      </div> */}
+
+      {/* Centered form */}
+      <div className="flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <button
+            onClick={handleCasesClick}
+            className="flex items-center gap-2 text-amber-600 hover:text-amber-700 mb-6 transition-colors text-sm font-medium"
           >
-            <input
-              id="username"
-              type="hidden"
-              name="username"
-              value={email || ""}
-              autoComplete="username"
-            />
-            <div className="relative">
-              <label
-                htmlFor="current-password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            <ArrowLeft className="w-4 h-4" />
+            Back to Portal
+          </button>
+
+          {/* Card */}
+          <div className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl shadow-2xl p-8">
+            {/* Card header strip */}
+
+            <h2 className="text-2xl font-bold text-black mb-4">
+              Change Password
+            </h2>
+            {/*  <p className="text-black/60 text-sm mt-1">
+                Update your account credentials below
+              </p> */}
+
+            {/* Card body */}
+            <div className="p-2">
+              <form
+                id="insured-change-pass"
+                className="space-y-6"
+                onSubmit={handleSubmit}
               >
-                Current Password
-              </label>
-              <input
-                type={showPassword ? "text" : "password"}
-                id="current-password"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="••••••••"
-                required
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                value={currentPassword}
-                autoComplete="current-password"
-              />
-              <button
-                className="absolute bottom-[3px] right-3 flex items-center text-sm  px-0 text-gray-600 bg-gray-50 border-right border-gray-300"
-                type="button"
-                onClick={handleTogglePassword}
-              >
-                <i
-                  className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
-                ></i>
-              </button>
+                {/* Hidden username for password managers */}
+                <input
+                  id="username"
+                  type="hidden"
+                  name="username"
+                  value={email || ""}
+                  autoComplete="username"
+                />
+
+                {/* Current Password */}
+                <div>
+                  <label
+                    htmlFor="current-password"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Current Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="current-password"
+                      className="w-full px-4 py-3 rounded-lg bg-white text-gray-900 placeholder-gray-400 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black pr-12"
+                      placeholder="Enter current password"
+                      required
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      value={currentPassword}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* New Password — keeps PasswordStrengthChecker */}
+                <PasswordStrengthChecker
+                  name="new_password"
+                  onPasswordChange={handlePasswordChange}
+                />
+
+                {/* Confirm Password */}
+                <div>
+                  <label
+                    htmlFor="confirm_password"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword2 ? "text" : "password"}
+                      id="confirm_password"
+                      placeholder="Confirm new password"
+                      className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="confirm-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword2(!showPassword2)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword2 ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-black hover:bg-gray-900 text-amber-400 font-semibold py-3 rounded-lg transition-colors shadow-lg"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Saving...
+                    </span>
+                  ) : (
+                    "Change Password"
+                  )}
+                </button>
+              </form>
+
+              {/* Feedback message */}
+              {message && (
+                <div
+                  key={timestamp}
+                  className={`mt-5 px-4 py-3 rounded-lg text-sm text-center font-medium ${
+                    messageType === "success"
+                      ? "bg-green-50 text-green-700 border border-green-200"
+                      : "bg-red-50 text-red-700 border border-red-200"
+                  }`}
+                >
+                  {message}
+                </div>
+              )}
             </div>
-            <PasswordStrengthChecker
-              name="new_password"
-              onPasswordChange={handlePasswordChange}
-            />
-            <div className="relative">
-              <label
-                htmlFor="confirm_password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Confirm password
-              </label>
-              <input
-                type={showPassword2 ? "text" : "password"}
-                id="confirm_password"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="confirm-password"
-              />
-              <button
-                className="absolute bottom-[3px] right-3 flex items-center text-sm  px-0 text-gray-600 bg-gray-50 border-right border-gray-300"
-                type="button"
-                onClick={handleTogglePassword2}
-              >
-                <i
-                  className={`fas ${showPassword2 ? "fa-eye-slash" : "fa-eye"}`}
-                ></i>
-              </button>
-            </div>
-            <button
-              type="submit"
-              className="w-full text-white bg-tussock-500 hover:bg-tussock-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              disabled={loading}
-            >
-              {loading ? "Loading..." : "Change Password"}
-            </button>
-          </form>
-          {message && (
-            <span
-              key={timestamp}
-              className="error text-md mt-5 block text-center"
-            >
-              {message}
-            </span>
-          )}
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
+
 export default ChangePass;

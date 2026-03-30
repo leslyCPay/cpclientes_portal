@@ -76,9 +76,9 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
 
   return (
     <div className="login flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 text-black ">
-      <div className="login-container bg-tussock-400 rounded-3xl">
+      <div className="login-container w-full max-w-md bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl shadow-2xl p-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm block">
-          <h2 className="mt-10 text-center text-2xl/9 font-semibold tracking-wide ">
+          <h2 className="text-2xl font-bold text-black mb-8">
             Home Owners' Area Login
           </h2>
         </div>
@@ -87,7 +87,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm/6 font-medium text-neutral-900"
+                className="block text-sm font-medium text-black mb-2"
               >
                 Email address
               </label>
@@ -101,29 +101,29 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   placeholder="Please enter your registered email"
                   value={formData.username}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-tussock-500  focus:ring-primary-600 focus:border-primary-600 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm/6 pl-2"
+                  className="w-full px-4 py-3 rounded-lg bg-white text-gray-900 placeholder-gray-400 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <label
                   htmlFor="password"
-                  className="block text-sm/6 font-medium text-neutral-900"
+                  className="block text-sm font-medium text-black"
                 >
                   Password
                 </label>
                 <div className="text-sm">
                   <a
                     onClick={() => navigate("/forget-password")}
-                    className="font-semibold text-tussock-600 hover:text-tussock-500 cursor-pointer"
+                    className="text-xs text-black hover:underline cursor-pointer"
                   >
                     Forgot password?
                   </a>
                 </div>
               </div>
-              <div className="mt-2 relative">
+              <div className="relative">
                 <input
                   id="password"
                   name="password"
@@ -133,12 +133,12 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-neutral-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-primary-600 focus:border-primary-600 placeholder:text-gray-400  sm:text-sm/6 pl-2"
+                  className="w-full px-4 py-3 rounded-lg bg-white text-gray-900 placeholder-gray-400 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black pr-12"
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? (
                     <svg
@@ -191,7 +191,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-full bg-neutral-900 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-neutral-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tussock-600"
+                className="w-full bg-black hover:bg-gray-900 text-amber-400 font-semibold py-3 rounded-lg transition-colors shadow-lg"
               >
                 Sign in
               </button>
@@ -202,11 +202,11 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
               <ClipLoader size={35} color={"#000000"} loading={loading} />
             </div>
           )}
-          <p className="mt-10 text-center text-sm/6 text-tussock-200">
+          <p className="mt-10 flex items-center justify-center gap-2 text-sm text-black">
             Don't have an account?
             <a
               onClick={() => navigate("/register")}
-              className="font-semibold text-tussock-600 hover:text-tussock-500 pl-2 cursor-pointer"
+              className="font-semibold hover:underline cursor-pointer"
             >
               Register
             </a>

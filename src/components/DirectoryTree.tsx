@@ -3,6 +3,14 @@ import axios from "axios";
 import BASE_URL from "../config";
 import { HSAccordion, HSTreeView } from "preline";
 import Loader from "./Loader";
+import {
+  Folder,
+  File,
+  ChevronRight,
+  ChevronDown,
+  Eye,
+  Download,
+} from "lucide-react";
 
 interface TreeNode {
   name: string;
@@ -23,7 +31,7 @@ interface TreeViewProps {
     fileId: number,
     filename: string,
     filetype: string,
-    isSelected: boolean
+    isSelected: boolean,
   ) => void;
   selectedFiles: { fileId: number; filename: string; filetype: string }[];
   onFileView: (attachmentId: number) => void;
@@ -35,7 +43,7 @@ interface DirectoryTreeProps {
     fileId: number,
     filename: string,
     filetype: string,
-    isSelected: boolean
+    isSelected: boolean,
   ) => void;
   selectedFiles: { fileId: number; filename: string; filetype: string }[];
   onFileView: (attachmentId: number) => void;
@@ -50,91 +58,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   onFileView,
 }) => {
   const isFolder = !!node.children;
-
-  // Function to get the file icon based on the file extension
-  const getFileIcon = (filename: string) => {
-    const extension = filename.split(".").pop()?.toLowerCase();
-    switch (extension) {
-      case "pdf":
-        return (
-          <svg
-            className="shrink-0 size-6 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <path d="M14 2v6h6"></path>
-            <path d="M10 13v-1h4v1"></path>
-            <path d="M10 16v-1h4v1"></path>
-            <path d="M10 19v-1h4v1"></path>
-          </svg>
-        );
-      case "docx":
-        return (
-          <svg
-            className="shrink-0 size-6 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <path d="M14 2v6h6"></path>
-            <path d="M12 13v-1h4v1"></path>
-            <path d="M12 16v-1h4v1"></path>
-            <path d="M12 19v-1h4v1"></path>
-          </svg>
-        );
-      case "css":
-        return (
-          <svg
-            className="shrink-0 size-6 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-            <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-          </svg>
-        );
-      default:
-        return (
-          <svg
-            className="shrink-0 size-6 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-            <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-          </svg>
-        );
-    }
-  };
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (node.file?.attachmentsid && onFileSelect) {
@@ -142,7 +66,7 @@ const TreeView: React.FC<TreeViewProps> = ({
         node.file.attachmentsid,
         node.file.filename,
         node.file.filetype,
-        e.target.checked
+        e.target.checked,
       );
     }
   };
@@ -153,119 +77,98 @@ const TreeView: React.FC<TreeViewProps> = ({
     }
   };
 
-  return (
-    <>
-      {isFolder ? (
-        <div
-          className="hs-accordion active"
-          role="treeitem"
-          aria-expanded="true"
-          id="hs-multiple-selection-tree-heading-one"
-          data-hs-tree-view-item={JSON.stringify({
-            value: node.name,
-            isDir: isFolder,
-          })}
+  if (isFolder) {
+    return (
+      <div
+        className="hs-accordion active"
+        role="treeitem"
+        aria-expanded={isExpanded}
+        id={`hs-tree-heading-${node.name}`}
+        data-hs-tree-view-item={JSON.stringify({
+          value: node.name,
+          isDir: true,
+        })}
+      >
+        {/* Folder Row */}
+        <button
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-amber-50 transition-colors rounded-lg text-left group hs-accordion-toggle"
+          style={{ paddingLeft: `${1 + level * 1.5}rem` }}
+          aria-expanded={isExpanded}
         >
-          {/* Folder/File Heading */}
-          <div className="hs-accordion-heading py-0.5 flex items-center gap-x-0.5 w-full hs-tree-view-selected:bg-gray-100 dark:hs-tree-view-selected:bg-neutral-700">
-            {isFolder && (
-              <button
-                className="hs-accordion-toggle flex justify-center items-center hover:bg-gray-100 rounded-md focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-                aria-expanded="true"
-              >
-                <svg
-                  className="size-6 text-gray-800 dark:text-neutral-200"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14"></path>
-                  <path
-                    className="hs-accordion-active:hidden block"
-                    d="M12 5v14"
-                  ></path>
-                </svg>
-              </button>
-            )}
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4 text-amber-600 shrink-0" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+          )}
+          <Folder className="w-5 h-5 text-amber-500 shrink-0" />
+          <span className="font-medium text-gray-700 group-hover:text-amber-700 text-sm flex-1 text-left">
+            {node.name}
+          </span>
+          {node.children && (
+            <span className="ml-auto text-xs text-gray-400 shrink-0">
+              {node.children.length} items
+            </span>
+          )}
+        </button>
 
-            <div className="grow hs-tree-view-selected:bg-gray-100 dark:hs-tree-view-selected:bg-neutral-700 px-1.5 rounded-md cursor-pointer">
-              <div className="flex items-center gap-x-3">
-                <svg
-                  className="shrink-0 size-6 text-gray-500 dark:text-neutral-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>
-                </svg>
-                <div className="grow">
-                  <span className="text-sm text-gray-800 dark:text-neutral-200">
-                    {node.name}
-                  </span>
-                </div>
-              </div>
-            </div>
+        {/* Folder Children */}
+        {isExpanded && (
+          <div className="hs-accordion-content mt-1">
+            {node?.children?.map((child, index) => (
+              <TreeView
+                key={index}
+                node={child}
+                level={level + 1}
+                onFileSelect={onFileSelect}
+                selectedFiles={selectedFiles}
+                onFileView={onFileView}
+              />
+            ))}
           </div>
-          {/* Folder Children */}
-          <div className="hs-accordion-content w-full overflow-hidden transition-[height] duration-300">
-            <div className="ps-7 relative before:absolute before:top-0 before:start-3 before:w-0.5 before:-ms-px before:h-full before:bg-gray-100 dark:before:bg-neutral-700">
-              {node?.children?.map((child, index) => (
-                <TreeView
-                  key={index}
-                  node={child}
-                  level={level + 1}
-                  onFileSelect={onFileSelect}
-                  selectedFiles={selectedFiles}
-                  onFileView={onFileView}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : (
-        // File Item
-        <div
-          className="hs-tree-view-selected:bg-gray-100 px-2 rounded-md cursor-pointer"
-          role="treeitem"
-          data-hs-tree-view-item={JSON.stringify({
-            value: node.name,
-            isDir: false,
-          })}
+        )}
+      </div>
+    );
+  }
+
+  // File row
+  const isChecked =
+    !!node.file?.attachmentsid &&
+    selectedFiles.some((file) => file.fileId === node.file?.attachmentsid);
+
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors rounded-lg group"
+      style={{ paddingLeft: `${2.5 + level * 1.5}rem` }}
+      role="treeitem"
+      data-hs-tree-view-item={JSON.stringify({
+        value: node.name,
+        isDir: false,
+      })}
+    >
+      <input
+        type="checkbox"
+        className="shrink-0 mt-0.5 w-4 h-4 border-gray-300 rounded text-amber-500 focus:ring-amber-400 cursor-pointer"
+        onChange={handleCheckboxChange}
+        checked={isChecked}
+      />
+      <File className="w-4 h-4 text-blue-500 shrink-0" />
+      <div className="flex-1 cursor-pointer" onClick={handleFileClick}>
+        <span className="text-sm text-gray-700 group-hover:text-gray-900">
+          {node.name}
+        </span>
+      </div>
+      {/* Hover actions */}
+      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={handleFileClick}
+          className="p-1.5 hover:bg-blue-100 rounded-md text-blue-600 transition-colors"
+          title="Preview"
         >
-          <div className="flex items-center gap-x-3">
-            <input
-              type="checkbox"
-              className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
-              onChange={handleCheckboxChange}
-              checked={
-                !!node.file?.attachmentsid &&
-                selectedFiles.some(
-                  (file) => file.fileId === node.file?.attachmentsid
-                )
-              }
-            />
-            {getFileIcon(node.name)}
-            <div className="grow" onClick={handleFileClick}>
-              <span className="text-sm text-gray-800 dark:text-neutral-200">
-                {node.name}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+          <Eye className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -281,18 +184,14 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchDocuments = async (caseId: string | null | undefined) => {
-    if (!caseId) {
-      //setMessage("Case ID is null");
-      return;
-    }
+    if (!caseId) return;
 
     setMessage("");
-
     setLoading(true);
 
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/documents-case?case_id=${caseId}`
+        `${BASE_URL}/api/documents-case?case_id=${caseId}`,
       );
 
       if (Object.keys(response.data).length === 0) {
@@ -325,12 +224,9 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
     const root: TreeNode = { name: "root", children: [] };
 
     const processItem = (item: any, parent: TreeNode) => {
-      if (!parent.children) {
-        parent.children = [];
-      }
+      if (!parent.children) parent.children = [];
 
       if (item.filename) {
-        // This is a file
         parent.children.push({
           name: item.filename,
           file: {
@@ -348,8 +244,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
           if (!isNaN(Number(key))) {
             processItem(item[key], parent);
           } else {
-            const folderName = key;
-            const folderNode: TreeNode = { name: folderName, children: [] };
+            const folderNode: TreeNode = { name: key, children: [] };
             parent?.children?.push(folderNode);
             processItem(item[key], folderNode);
           }
@@ -361,8 +256,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
       if (!isNaN(Number(key))) {
         processItem(data[key], root);
       } else {
-        const folderName = key;
-        const folderNode: TreeNode = { name: folderName, children: [] };
+        const folderNode: TreeNode = { name: key, children: [] };
         root.children!.push(folderNode);
         processItem(data[key], folderNode);
       }
@@ -371,9 +265,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
     return root;
   };
 
-  if (!directoryTree) {
-    return <Loader />;
-  }
+  if (!directoryTree) return <Loader />;
 
   return (
     <div
@@ -381,23 +273,32 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
       role="tree"
       aria-orientation="vertical"
       data-hs-tree-view='{
-      "controlBy": "checkbox",
-      "autoSelectChildren": true
-    }'
+        "controlBy": "checkbox",
+        "autoSelectChildren": true
+      }'
     >
       {loading && <Loader />}
-      {message && (
-        <span className="error text-md mt-5 block text-left">{message}</span>
+
+      {message && !loading && (
+        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+          <File className="w-12 h-12 mb-3 opacity-50" />
+          <p className="text-sm">{message}</p>
+        </div>
       )}
-      {directoryTree?.children?.map((child, index) => (
-        <TreeView
-          key={index}
-          node={child}
-          onFileSelect={onFileSelect}
-          selectedFiles={selectedFiles}
-          onFileView={onFileView}
-        />
-      ))}
+
+      {!loading && !message && (
+        <div className="space-y-1">
+          {directoryTree?.children?.map((child, index) => (
+            <TreeView
+              key={index}
+              node={child}
+              onFileSelect={onFileSelect}
+              selectedFiles={selectedFiles}
+              onFileView={onFileView}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

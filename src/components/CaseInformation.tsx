@@ -1,112 +1,208 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, FileText, MessageSquare } from "lucide-react";
+import { DocumentPreview } from "./DocumentPreview";
 
 interface Props {
   case_id: string;
   case_number: string;
   claim_number: string;
+  status: string;
+  final_status: string;
+  documents?: any[];
   [key: string]: any;
 }
 
-/*{
-        "casesid": 395098,
-        "case_id": "PDC25-000024",
-        "claim_number": "47849165",
-        "stage": "Pre-Litigation",
-        "type_of_claim": "HO",
-        "state": "FL"
-    },*/
-
 const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
   const navigate = useNavigate();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [requiresConfirmation, setRequiresConfirmation] = useState(false);
+  const [hasConfirmed, setHasConfirmed] = useState(false);
 
   const goToCaseDetails = (
     caseId: string,
     activeTab: string = "info",
     state: string = "",
-    record_id: string = ""
+    record_id: string = "",
   ) => {
-    //if (activeTab == "docs") {
     sessionStorage.setItem("record_id", record_id);
-    // }
-
     navigate(`/detail-case/${caseId}?tab=${activeTab}`, {
       state: { state },
     });
   };
 
+  const handleViewDocs = (needsConfirmation: boolean) => {
+    setRequiresConfirmation(needsConfirmation);
+    setPreviewOpen(true);
+  };
+
+  const handleConfirm = () => {
+    setHasConfirmed(true);
+  };
+
+  // Statuses that show "View Submitted Documents" (blue)
+  const isViewDocsStatus =
+    arepons.status === "Presuit - Demand Sent" ||
+    arepons.status === "SETTLED - Awaiting Release" ||
+    arepons.status === "10-Day Demand - Paid Through Client";
+
+  // Statuses that show "Confirm Submitted Information" (teal)
+  const isConfirmStatus =
+    arepons.status === "SETTLED - Global Awaiting Release";
+
+  // Statuses that show the classic View + Docs + Message icons
+  const isIconOnlyStatus =
+    arepons.status === "New Case Entered" ||
+    arepons.status === "Ready for Litigation";
+
   return (
-    <tr
-      className="bg-tussock-300 border-b border-tussock-500"
-      key={arepons.case_id}
-    >
-      {Object.entries(arepons)
-        .filter(([key]) => key !== "id")
-        .filter(([key]) => key !== "type_of_claim")
-        .filter(([key]) => key !== "state")
-        .filter(([key]) => key !== "stage")
-        .map(([key, value]) => (
-          <td
-            scope="row"
-            className="px-6 py-4 text-blue-50 whitespace-nowrap dark:text-blue-100 font-semibold uppercase"
-            key={key}
-          >
-            {value}
-          </td>
-        ))}
-      <td className="px-6 py-4" key={arepons.case_id}>
-        <button
-          key={arepons.case_id}
-          onClick={() =>
-            goToCaseDetails(arepons.case_id, "info", arepons.state, arepons.id)
-          }
-          type="button"
-          className="w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center"
-        >
-          <svg
-            className="w-6 h-6 text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="2"
-              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-            />
-          </svg>
-        </button>
-        <button
-          type="button"
-          key={"docs_" + arepons.case_id}
-          onClick={() =>
-            goToCaseDetails(arepons.case_id, "docs", arepons.state, arepons.id)
-          }
-          className=" docs-button w-auto text-white bg-tussock-500 hover:bg-tussock-600 focus:ring-4 focus:outline-none focus:ring-tussock-300 font-medium rounded-lg text-sm px-2 py-2.5 text-center inline-flex items-center mx-1"
-        >
-          <svg
-            className="w-6 h-6 text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 3v4a1 1 0 0 1-1 1H5m14-4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"
-            />
-          </svg>
-        </button>
-      </td>
-    </tr>
+    <>
+      <div
+        className="px-6 py-5 hover:bg-amber-50/50 transition-colors"
+        key={arepons.case_id}
+      >
+        <div className="grid grid-cols-12 gap-4 items-center">
+          {/* Case ID */}
+          <div className="col-span-2">
+            <div className="font-semibold text-gray-900 uppercase text-sm">
+              {arepons.case_id}
+            </div>
+            {arepons.final_status && (
+              <div className="text-xs text-gray-500 mt-1 font-mono">
+                {arepons.final_status}
+              </div>
+            )}
+          </div>
+
+          {/* Stage */}
+          <div className="col-span-2">
+            <div className="font-semibold text-gray-900 uppercase text-sm">
+              {arepons.stage}
+            </div>
+            {arepons.case_number && (
+              <div className="text-xs text-gray-500 mt-1 font-mono">
+                #{arepons.case_number}
+              </div>
+            )}
+          </div>
+
+          {/* Claim Number */}
+          <div className="col-span-2">
+            <div className="text-gray-700 font-mono text-sm">
+              {arepons.claim_number}
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="col-span-2">
+            <span
+              className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                arepons.status === "New Case Entered"
+                  ? "bg-blue-100 text-blue-800"
+                  : arepons.status === "Presuit - Demand Sent"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : arepons.status === "SETTLED - Awaiting Release"
+                      ? "bg-purple-100 text-purple-800"
+                      : arepons.status === "10-Day Demand - Paid Through Client"
+                        ? "bg-orange-100 text-orange-800"
+                        : arepons.status === "Ready for Litigation"
+                          ? "bg-indigo-100 text-indigo-800"
+                          : arepons.status ===
+                              "SETTLED - Global Awaiting Release"
+                            ? "bg-teal-100 text-teal-800"
+                            : "bg-green-100 text-green-800"
+              }`}
+            >
+              {arepons.status}
+            </span>
+          </div>
+
+          {/* Actions */}
+          <div className="col-span-4 flex justify-end gap-2">
+            {isConfirmStatus ? (
+              // Teal — "Confirm Submitted Information"
+              <button
+                type="button"
+                onClick={() => handleViewDocs(true)}
+                className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md text-sm font-medium"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Confirm Submitted Information</span>
+              </button>
+            ) : isViewDocsStatus ? (
+              // Blue — "View Submitted Documents"
+              <button
+                type="button"
+                onClick={() => handleViewDocs(false)}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md text-sm font-medium"
+              >
+                <FileText className="w-4 h-4" />
+                <span>View Submitted Documents</span>
+              </button>
+            ) : (
+              // Default — View + Docs icon + Messages icon
+              <>
+                <button
+                  onClick={() =>
+                    goToCaseDetails(
+                      arepons.case_id,
+                      "info",
+                      arepons.state,
+                      arepons.id,
+                    )
+                  }
+                  type="button"
+                  className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md text-sm font-medium"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>View</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    goToCaseDetails(
+                      arepons.case_id,
+                      "docs",
+                      arepons.state,
+                      arepons.id,
+                    )
+                  }
+                  className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md"
+                >
+                  <FileText className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    goToCaseDetails(
+                      arepons.case_id,
+                      "messages",
+                      arepons.state,
+                      arepons.id,
+                    )
+                  }
+                  className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Document Preview Modal */}
+      <DocumentPreview
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        onConfirm={handleConfirm}
+        documents={arepons.documents ?? []}
+        hasConfirmed={hasConfirmed}
+        requiresConfirmation={requiresConfirmation}
+      />
+    </>
   );
 };
 

@@ -1,17 +1,19 @@
 import React from "react";
 
 interface DocumentViewerProps {
-  url: string; // The URL of the file to display
+  url: string;
 }
 
 const DocumentViewer: React.FC<DocumentViewerProps> = ({ url }) => {
   const encodedUrl = encodeURIComponent(url);
   return (
     <iframe
-      title="Document Viewer "
+      title="Document Viewer"
       src={`https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`}
       width="100%"
-      height="600"
+      height="100%"
+      className="rounded-lg"
+      style={{ minHeight: "540px", border: "none" }}
     />
   );
 };

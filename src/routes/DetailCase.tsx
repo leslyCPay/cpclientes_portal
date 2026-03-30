@@ -8,16 +8,28 @@ import toast, { Toaster } from "react-hot-toast";
 import { HSTabs } from "preline";
 import ErrorBoundary from "../components/ErrorBoundary";
 import ContactPopup from "../components/ContactPopup";
+import { Messages } from "../components/Messages";
+import { Home, ChevronRight, Download, Upload } from "lucide-react";
+import {
+  User,
+  MapPin,
+  Phone,
+  Mail,
+  FileText,
+  Calendar,
+  Shield,
+  Gavel,
+  UserCheck,
+  DollarSign,
+  AlertCircle,
+} from "lucide-react";
 
-const LazyDirectoryTree = React.lazy(() => {
-  //console.log("Loading DirectoryTree...");
-  return import("../components/DirectoryTree");
-});
-
-const LazyDocumentViewer = React.lazy(() => {
-  //console.log("Loading DocumentViewer...");
-  return import("../components/DocumentViewer");
-});
+const LazyDirectoryTree = React.lazy(
+  () => import("../components/DirectoryTree"),
+);
+const LazyDocumentViewer = React.lazy(
+  () => import("../components/DocumentViewer"),
+);
 
 const DetailCase: React.FC = () => {
   const { caseId } = useParams<{ caseId: string }>();
@@ -46,32 +58,24 @@ const DetailCase: React.FC = () => {
     navigate("/cases");
   };
 
-  //console.log(caseId);
-
   useEffect(() => {
     const elements = document.querySelectorAll(".hs-tab, #data-hs-tab");
     elements.forEach((element) => {
-      if (element) {
-        HSTabs.autoInit();
-      }
+      if (element) HSTabs.autoInit();
     });
 
     if (activeTab === "info" && !caseDetails) {
       const fetchCaseDetails = async () => {
         try {
           const response = await axios.get(
-            `${BASE_URL}/api/details?case_id=${caseId}&state=${state}`
+            `${BASE_URL}/api/details?case_id=${caseId}&state=${state}`,
           );
-
           setCaseDetails(response.data[0]);
           setCurrentStepValue(response.data[0].step);
           setlabelStep(response.data[0].stage);
           setRecordId(response.data[0].casesid);
-        } catch (error) {
-          //console.error("Error fetching case details:", error);
-        }
+        } catch (error) {}
       };
-
       fetchCaseDetails();
     }
   }, [activeTab, caseId, caseDetails]);
@@ -111,10 +115,9 @@ const DetailCase: React.FC = () => {
     "Settlement",
   ];
 
-  // Update the active tab if the query parameter changes
   useEffect(() => {
     setActiveTab(activeTabFromQuery);
-    if (activeTabFromQuery == "docs") {
+    if (activeTabFromQuery === "docs") {
       const recordid = sessionStorage.getItem("record_id");
       setRecordId(recordid);
     }
@@ -125,9 +128,8 @@ const DetailCase: React.FC = () => {
     navigate(`/detail-case/${caseId}?tab=${tab}`);
   };
 
-  // Function to handle file selection and upload
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -138,72 +140,50 @@ const DetailCase: React.FC = () => {
     formData.append("record_id", recordId || "");
 
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/upload-file`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      //console.log("File uploaded successfully:", response.data);
+      await axios.post(`${BASE_URL}/api/upload-file`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       toast.success("File uploaded successfully");
-
-      // Trigger a refresh of the DirectoryTree
       setRefreshTree((prev) => !prev);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Error uploading file:", {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
-      } else {
-        //console.error("Error uploading file:", error);
-      }
       toast.error("Error uploading file");
     } finally {
       setIsUploading(false);
     }
   };
 
-  // Function to handle file selection
   const handleFileSelect = (
     fileId: number,
     filename: string,
     filetype: string,
-    isSelected: boolean
+    isSelected: boolean,
   ) => {
     setSelectedFiles((prev) =>
       isSelected
         ? [...prev, { fileId, filename, filetype }]
-        : prev.filter((file) => file.fileId !== fileId)
+        : prev.filter((file) => file.fileId !== fileId),
     );
   };
 
-  // Function to handle downloads
   const handleDownload = async () => {
     if (selectedFiles.length === 0) return;
-    setIsDownloading(true); // Start loading
+    setIsDownloading(true);
 
     try {
       const response = await axios.post(
         `${BASE_URL}/api/download-files`,
         { files: selectedFiles },
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-
       const data = JSON.parse(response.config.data);
       const filename = data.files[0].filename;
-
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute(
         "download",
-        selectedFiles.length === 1 ? `${filename}` : "files.zip"
+        selectedFiles.length === 1 ? `${filename}` : "files.zip",
       );
       document.body.appendChild(link);
       link.click();
@@ -212,24 +192,17 @@ const DetailCase: React.FC = () => {
       console.error("Download failed:", error);
     } finally {
       setIsDownloading(false);
-      setTimeout(() => {
-        setSelectedFiles([]);
-      }, 1800);
+      setTimeout(() => setSelectedFiles([]), 1800);
     }
   };
 
-  // Function to handle file viewer
   const handleFileView = async (attachmentId: number) => {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/file-viewer`, {
-        params: {
-          attachmentId: attachmentId,
-        },
+        params: { attachmentId },
       });
-      // Use the temporary URL directly
       const fileUrl = `${BASE_URL}${response.data.url}`;
-
       setViewFileUrl(fileUrl);
     } catch (err) {
       console.error("Error fetching file:", err);
@@ -238,54 +211,29 @@ const DetailCase: React.FC = () => {
     }
   };
 
+  const tabs = [
+    { id: "info", label: "Info" },
+    { id: "docs", label: "Docs" },
+    { id: "messages", label: "Messages" },
+  ];
+
   return (
-    <div className="h-full w-full ">
-      <div className="mx-auto min-h-screen bg-amber-100">
-        <div className="cp-breadcrumbs">
-          <nav
-            className="flex bg-gray-50 text-tussock-600 border border-gray-200 py-3 px-5 rounded-lg"
-            aria-label="Breadcrumb"
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Breadcrumbs — Figma style */}
+        <div className="flex items-center gap-2 text-sm mb-6">
+          <button
+            onClick={handleBackButtonClick}
+            className="flex items-center gap-1 text-amber-600 hover:text-amber-700 transition-colors"
           >
-            <ol className="inline-flex items-center space-x-1 md:space-x-3">
-              <li className="inline-flex items-center">
-                <a
-                  onClick={handleBackButtonClick}
-                  className="text-sm text-tussock-600 hover:text-tussock-900 inline-flex items-center cursor-pointer"
-                >
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                  </svg>
-                  Cases
-                </a>
-              </li>
-              <li aria-current="page">
-                <div className="flex items-center">
-                  <svg
-                    className="w-6 h-6 text-tussock-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                  <span className="text-tussock-400 ml-1 md:ml-2 text-sm font-medium dark:text-gray-500">
-                    Case Details
-                  </span>
-                </div>
-              </li>
-            </ol>
-          </nav>
+            <Home className="w-4 h-4" />
+            Cases
+          </button>
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <span className="text-gray-600">Case Details</span>
         </div>
 
+        {/* Progress Bar */}
         {caseDetails && (
           <ProgressBar
             steps={steps}
@@ -294,450 +242,315 @@ const DetailCase: React.FC = () => {
           />
         )}
 
-        <div className="items-center mt-16 ">
-          {/* START TABS */}
-
-          <div className="border-b border-transparent ">
-            <nav
-              className="-mb-0.5 flex justify-center gap-x-6"
-              aria-label="Tabs"
-              role="tablist"
-              aria-orientation="horizontal"
-            >
+        {/* Tabs */}
+        <div className="bg-white rounded-t-2xl shadow-md border-b border-gray-200 overflow-hidden mt-6">
+          <div className="flex gap-1 px-6 pt-6">
+            {tabs.map((tab) => (
               <button
+                key={tab.id}
                 type="button"
-                className={`py-4 px-1 inline-flex items-center gap-x-2 border-b-4 ${
-                  activeTab === "info"
-                    ? "border-tussock-500 text-tussock-600 font-semibold" // Active tab styles
-                    : "border-gray-300 text-gray-500 hover:border-tussock-500 hover:text-tussock-600" // Inactive tab styles
-                }`}
-                id="info"
-                aria-selected={activeTab === "info"}
-                data-hs-tab="#info"
-                aria-controls="info"
-                onClick={() => handleClickTab("info")}
+                onClick={() => handleClickTab(tab.id)}
+                aria-selected={activeTab === tab.id}
                 role="tab"
-              >
-                Info
-              </button>
-              <button
-                type="button"
-                className={`py-4 px-1 inline-flex items-center gap-x-2 border-b-4 ${
-                  activeTab === "docs"
-                    ? "border-tussock-500 text-tussock-600 font-semibold" // Active tab styles
-                    : "border-gray-300 text-gray-500 hover:border-tussock-500 hover:text-tussock-600" // Inactive tab styles
+                className={`px-6 py-3 font-medium transition-all rounded-t-lg text-sm ${
+                  activeTab === tab.id
+                    ? "bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-md"
+                    : "text-gray-600 hover:bg-gray-100"
                 }`}
-                id="docs"
-                aria-selected={activeTab === "docs"}
-                data-hs-tab="#docs"
-                aria-controls="docs"
-                onClick={() => handleClickTab("docs")}
-                role="tab"
               >
-                Docs
+                {tab.label}
               </button>
-            </nav>
+            ))}
           </div>
+        </div>
 
-          <div className="mt-8">
-            {activeTab === "info" && (
-              <div
-                id="info"
-                role="tabpanel"
-                aria-labelledby="info"
-                className={`${activeTab === "info" ? "block" : "hidden"}`}
-              >
-                <div className="cp-detailsCase flex flex-col gap-3 min-h-full">
-                  <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow border-4 border-amber-600 rounded min-h-full justify-center mb-8">
-                    {caseDetails ? (
-                      <React.Fragment>
-                        <div className="w-full grid grid-cols-1 md:grid-cols-3 pt-4 m-auto">
-                          {/*  {Object.keys(caseDetails).map((key, index) => (                                
-                                  <div className='text-base leading-8 py-4' key={index}>
-                                      <p className='text-xs font-semibold text-amber-700 uppercase'>{key.replace(/_/g, " ")}</p>
-                                      <p  className='text-md text-gray-500'> {caseDetails['key']}</p>
-                                  </div>
-                              ))}  */}
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              case id
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["case_id"]}
-                            </p>
-                          </div>
-                          {/*   <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              status
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["status"]}
-                            </p>
-                          </div> */}
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              insured
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["insured"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              address
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["address"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              county
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["county"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              phone
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["insured_phone"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              e-mail
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["insured_email"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              insurance company
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["insurance_company"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              policy number
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["policy_number"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              claim number
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["claim_number"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              date of loss
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["date_of_loss"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              denial reasons
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["denial_reasons"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              final status
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["final_status"]}
-                            </p>
-                          </div>
+        {/* Tab Content */}
+        <div className="bg-white rounded-b-2xl shadow-md p-8">
+          {/* INFO TAB */}
+          {activeTab === "info" && (
+            <div id="info" role="tabpanel" aria-labelledby="info">
+              {caseDetails ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Client Information */}
+                  <InfoCard
+                    icon={<User className="w-5 h-5 text-amber-700" />}
+                    iconBg="bg-amber-100"
+                    iconColor="text-amber-700"
+                    title="Client Information"
+                  >
+                    <InfoField label="Insured">
+                      <div className="font-bold uppercase">
+                        {caseDetails["insured"]}
+                      </div>
+                    </InfoField>
+                    <InfoField
+                      label={
+                        <>
+                          <MapPin className="w-3 h-3" /> ADDRESS
+                        </>
+                      }
+                    >
+                      <div className="uppercase">{caseDetails["address"]}</div>
+                    </InfoField>
+                    <InfoField
+                      label={
+                        <>
+                          <Phone className="w-3 h-3" /> PHONE
+                        </>
+                      }
+                    >
+                      {caseDetails["insured_phone"]}
+                    </InfoField>
+                    <InfoField
+                      label={
+                        <>
+                          <Mail className="w-3 h-3" /> E-MAIL
+                        </>
+                      }
+                    >
+                      <div className="uppercase">
+                        {caseDetails["insured_email"]}
+                      </div>
+                    </InfoField>
+                  </InfoCard>
 
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              case number
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["case_number"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              Assigned Attorney
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["attorney"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              Legal Assistant
-                            </p>
-                            <div className="text-md text-gray-500 pr-5 ">
-                              <ContactPopup
-                                email={
-                                  caseDetails["case_manager_email"] ||
-                                  "Not available"
-                                }
-                                phone={
-                                  caseDetails["case_manager_phone"] ||
-                                  "Not available"
-                                }
-                              >
-                                <a className="inline-flex align-middle items-start text-blue-800 cursor-pointer">
-                                  <i className="pt-1.5">
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 20 20"
-                                      fill="currentColor"
-                                      className="size-5"
-                                    >
-                                      <path
-                                        fillRule="evenodd"
-                                        d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z"
-                                        clipRule="evenodd"
-                                      />
-                                    </svg>
-                                  </i>
-                                  <span className="pl-2 uppercase font-semibold">
-                                    {caseDetails["case_manager_name"]}
-                                  </span>
-                                </a>
-                              </ContactPopup>
-                            </div>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              public adjuster
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["public_adjuster"]}
-                            </p>
-                          </div>
+                  {/* Case Details */}
+                  <InfoCard
+                    icon={<FileText />}
+                    iconBg="bg-blue-100"
+                    iconColor="text-blue-700"
+                    title="Case Details"
+                  >
+                    <InfoField label="Case ID">
+                      <div className="font-bold">{caseDetails["case_id"]}</div>
+                    </InfoField>
+                    <InfoField label="Case Number">
+                      {caseDetails["case_number"]}
+                    </InfoField>
+                    <InfoField label="Claim Number">
+                      {caseDetails["claim_number"]}
+                    </InfoField>
+                    <InfoField label="County">
+                      {caseDetails["county"]}
+                    </InfoField>
+                    <InfoField
+                      label={
+                        <>
+                          <Calendar className="w-3 h-3" /> DATE OF LOSS
+                        </>
+                      }
+                    >
+                      {caseDetails["date_of_loss"]}
+                    </InfoField>
+                  </InfoCard>
 
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              depo of plaintiff date
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["depo_of_plaintiff_date"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              mediation date
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["mediation_date"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              pfs crn 57 105 status
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["pfs_crn_57_105_status"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              pfs received
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["pfs_received"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              pfs amount
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {formattedTotalBillAmount}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              safe harbor letter received
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["safe_harbor_letter_received"]}
-                            </p>
-                          </div>
-                          <div className="text-base leading-8 py-4">
-                            <p className="text-xs font-semibold text-amber-700 uppercase">
-                              trial date
-                            </p>
-                            <p className="text-md text-gray-500 pr-5 uppercase font-semibold">
-                              {" "}
-                              {caseDetails["trial_date"]}
-                            </p>
-                          </div>
-                        </div>
-                      </React.Fragment>
-                    ) : (
-                      <Loader />
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+                  {/* Insurance Details */}
+                  <InfoCard
+                    icon={<Shield className="w-5 h-5 text-purple-700" />}
+                    iconBg="bg-purple-100"
+                    iconColor="text-purple-700"
+                    title="Insurance Details"
+                  >
+                    <InfoField label="Insurance Company">
+                      {caseDetails["insurance_company"]}
+                    </InfoField>
+                    <InfoField label="Policy Number">
+                      {caseDetails["policy_number"]}
+                    </InfoField>
+                    <InfoField
+                      label={
+                        <>
+                          <AlertCircle className="w-3 h-3" /> DENIAL REASONS
+                        </>
+                      }
+                    >
+                      {caseDetails["denial_reasons"]}
+                    </InfoField>
+                    <InfoField label="Final Status">
+                      <FinalStatusBadge status={caseDetails["final_status"]} />
+                    </InfoField>
+                  </InfoCard>
 
-            {activeTab === "docs" && (
-              <div
-                id="docs"
-                role="tabpanel"
-                aria-labelledby="docs"
-                className={`${activeTab === "docs" ? "block" : "hidden"}`}
-              >
-                <div className="cp-docs flex flex-col gap-3 min-h-full">
-                  <div className="relative bg-amber-100 m-auto  px-6 py-4 w-full max-w-6xl shadow  min-h-screen justify-center mb-8">
-                    <div className="grid grid-flow-col gap-3 ">
-                      <div className="col-span-2 md:col-span-1 h-100 max-w-max ">
-                        <button
-                          type="button"
-                          className={`m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-tussock-500 text-white hover:bg-tussock-400 focus:outline-none focus:bg-tussock-400 ${
-                            selectedFiles.length === 0 || isDownloading
-                              ? "opacity-50 pointer-events-none"
-                              : ""
-                          }`}
-                          disabled={selectedFiles.length === 0 || isDownloading}
-                          onClick={handleDownload}
-                        >
-                          {isDownloading ? (
-                            <>
-                              <svg
-                                aria-hidden="true"
-                                role="status"
-                                className="inline w-4 h-4 me-3 text-white animate-spin"
-                                viewBox="0 0 100 101"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                  fill="currentColor"
-                                />
-                                <path
-                                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                  fill="#B66729"
-                                />
-                              </svg>
-                              Downloading...
-                            </>
-                          ) : (
-                            <>
-                              Download File(s)
-                              <svg
-                                className="w-6 h-6 text-white"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01"
-                                />
-                              </svg>
-                            </>
-                          )}
-                        </button>
-
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          style={{ display: "none" }}
-                          onChange={handleFileUpload}
-                        />
-                        <button
-                          type="button"
-                          className="m-auto py-3 px-4 mx-5 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-black text-white hover:bg-gray-800 focus:outline-none focus:bg-gray-800 mt-4 md:mt-0"
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          Upload File(s)
+                  {/* Legal Team */}
+                  <InfoCard
+                    icon={<Gavel className="w-5 h-5 text-green-700" />}
+                    iconBg="bg-green-100"
+                    iconColor="text-green-700"
+                    title="Legal Team"
+                  >
+                    <InfoField
+                      label={
+                        <>
+                          <UserCheck className="w-3 h-3" /> ASSIGNED ATTORNEY
+                        </>
+                      }
+                    >
+                      {caseDetails["attorney"]}
+                    </InfoField>
+                    <InfoField label="Legal Assistant">
+                      <ContactPopup
+                        email={
+                          caseDetails["case_manager_email"] || "Not available"
+                        }
+                        phone={
+                          caseDetails["case_manager_phone"] || "Not available"
+                        }
+                      >
+                        <a className="inline-flex items-center gap-1.5 text-blue-700 hover:text-blue-900 cursor-pointer font-medium">
                           <svg
-                            className="w-6 h-6 text-white"
-                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="w-4 h-4"
                           >
                             <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M12 5v9m-5 0H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2M8 9l4-5 4 5m1 8h.01"
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z"
+                              clipRule="evenodd"
                             />
                           </svg>
-                        </button>
-                        <div
-                          className="mt-8 mx-3 overflow-y-auto overflow-x-hidden h-[550px] min-w-full [&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:rounded-full
-  [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:rounded-full
-  [&::-webkit-scrollbar-thumb]:bg-gray-300"
-                        >
-                          {isUploading ? (
-                            <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-10">
-                              <div>Loading...</div> {/* Show loading spinner */}
-                            </div>
-                          ) : (
-                            <Toaster
-                              toastOptions={{
-                                success: {
-                                  style: {
-                                    background: "bg-green-200",
-                                  },
-                                },
-                                error: {
-                                  style: {
-                                    background: "bg-red-200",
-                                  },
-                                },
-                              }}
-                            />
-                          )}
+                          <span className="uppercase text-sm">
+                            {caseDetails["case_manager_name"]}
+                          </span>
+                        </a>
+                      </ContactPopup>
+                    </InfoField>
+                    <InfoField label="Public Adjuster">
+                      {caseDetails["public_adjuster"]}
+                    </InfoField>
+                  </InfoCard>
 
+                  {/* Important Dates */}
+                  <InfoCard
+                    icon={<Calendar className="w-5 h-5 text-red-700" />}
+                    iconBg="bg-red-100"
+                    iconColor="text-red-700"
+                    title="Important Dates"
+                  >
+                    <InfoField label="Depo of Plaintiff Date">
+                      {caseDetails["depo_of_plaintiff_date"] || "Not scheduled"}
+                    </InfoField>
+                    <InfoField label="Mediation Date">
+                      {caseDetails["mediation_date"] || "Not scheduled"}
+                    </InfoField>
+                    <InfoField label="Trial Date">
+                      {caseDetails["trial_date"] || "Not scheduled"}
+                    </InfoField>
+                  </InfoCard>
+
+                  {/* Financial Details */}
+                  <InfoCard
+                    icon={<DollarSign className="w-5 h-5 text-amber-700" />}
+                    iconBg="bg-amber-100"
+                    iconColor="text-amber-700"
+                    title="Financial Details"
+                  >
+                    <InfoField label="PFS CRN 57 105 Status">
+                      {caseDetails["pfs_crn_57_105_status"]}
+                    </InfoField>
+                    <InfoField label="PFS Received">
+                      {caseDetails["pfs_received"]}
+                    </InfoField>
+                    <InfoField label="PFS Amount">
+                      <span className="font-semibold text-lg text-gray-900">
+                        {formattedTotalBillAmount}
+                      </span>
+                    </InfoField>
+                    <InfoField label="Safe Harbor Letter Received">
+                      {caseDetails["safe_harbor_letter_received"]}
+                    </InfoField>
+                  </InfoCard>
+                </div>
+              ) : (
+                <Loader />
+              )}
+            </div>
+          )}
+
+          {/* DOCS TAB */}
+          {activeTab === "docs" && (
+            <div id="docs" role="tabpanel" aria-labelledby="docs">
+              <div className="space-y-6">
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    disabled={selectedFiles.length === 0 || isDownloading}
+                    onClick={handleDownload}
+                    className={`flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg font-medium text-sm ${
+                      selectedFiles.length === 0 || isDownloading
+                        ? "opacity-50 pointer-events-none"
+                        : ""
+                    }`}
+                  >
+                    {isDownloading ? (
+                      <>
+                        <svg
+                          aria-hidden="true"
+                          className="inline w-4 h-4 animate-spin"
+                          viewBox="0 0 100 101"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="#B66729"
+                          />
+                        </svg>
+                        Downloading...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4" />
+                        Download File(s)
+                      </>
+                    )}
+                  </button>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileUpload}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg font-medium text-sm"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload File(s)
+                  </button>
+                </div>
+
+                {/* Documents + Viewer Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Directory Tree */}
+                  <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+                    <div
+                      className="p-4 overflow-y-auto overflow-x-hidden h-[550px]
+                        [&::-webkit-scrollbar]:w-2
+                        [&::-webkit-scrollbar-track]:rounded-full
+                        [&::-webkit-scrollbar-track]:bg-gray-100
+                        [&::-webkit-scrollbar-thumb]:rounded-full
+                        [&::-webkit-scrollbar-thumb]:bg-gray-300"
+                    >
+                      {isUploading ? (
+                        <div className="flex items-center justify-center h-full">
+                          <Loader />
+                        </div>
+                      ) : (
+                        <>
+                          <Toaster
+                            toastOptions={{
+                              success: { style: { background: "#f0fdf4" } },
+                              error: { style: { background: "#fef2f2" } },
+                            }}
+                          />
                           <Suspense fallback={<Loader />}>
                             {activeTab === "docs" && (
                               <ErrorBoundary>
@@ -752,30 +565,108 @@ const DetailCase: React.FC = () => {
                               </ErrorBoundary>
                             )}
                           </Suspense>
-                        </div>
-                      </div>
-                      <div className="col-span-2 md:col-span-4 mt-4 xs:w-full text-center h-[650px] border-2 border-dashed border-gray-300 flex items-center justify-center">
-                        <Suspense fallback={<Loader />}>
-                          {viewFileUrl ? (
-                            <LazyDocumentViewer url={viewFileUrl} />
-                          ) : (
-                            <span className="text-gray-300">
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Document Viewer */}
+                  <div className="lg:col-span-2">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl h-[550px] flex items-center justify-center overflow-hidden">
+                      <Suspense fallback={<Loader />}>
+                        {viewFileUrl ? (
+                          <LazyDocumentViewer url={viewFileUrl} />
+                        ) : (
+                          <div className="text-center text-blue-400 p-8">
+                            <svg
+                              className="w-12 h-12 mx-auto mb-3 opacity-50"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              />
+                            </svg>
+                            <p className="font-semibold text-blue-900 mb-1">
                               Document Viewer
-                            </span>
-                          )}
-                        </Suspense>
-                      </div>
+                            </p>
+                            <p className="text-sm text-blue-700">
+                              Click on any document to preview it here.
+                            </p>
+                          </div>
+                        )}
+                      </Suspense>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* END TABS */}
+          {/* MESSAGES TAB */}
+
+          {activeTab === "messages" && ( // ← add this condition
+            <div id="messages" role="tabpanel" aria-labelledby="messages">
+              <div className="space-y-6">
+                <Messages />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
+  );
+};
+
+/* ─── Small helper components ─── */
+
+const InfoCard: React.FC<{
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  title: string;
+  children: React.ReactNode;
+}> = ({ icon, iconBg, iconColor, title, children }) => (
+  <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-md border border-amber-100 hover:shadow-lg transition-shadow">
+    <div className="flex items-center gap-3 mb-4">
+      <div className={`p-2 ${iconBg} rounded-lg`}>
+        <span className={`w-5 h-5 block ${iconColor}`}>{icon}</span>
+      </div>
+      <h3 className="font-semibold text-gray-900">{title}</h3>
+    </div>
+    <div className="space-y-3 text-sm">{children}</div>
+  </div>
+);
+
+const InfoField: React.FC<{
+  label: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ label, children }) => (
+  <div>
+    <div className="text-xs text-gray-500 mb-1 flex items-center gap-1 uppercase tracking-wide">
+      {label}
+    </div>
+    <div className="text-gray-900 font-medium">{children || "—"}</div>
+  </div>
+);
+
+const FinalStatusBadge: React.FC<{ status: string }> = ({ status }) => {
+  const cls =
+    status === "CLOSED"
+      ? "bg-gray-200 text-gray-800"
+      : status === "OPEN"
+        ? "bg-green-100 text-green-800"
+        : "bg-blue-100 text-blue-800";
+  return (
+    <span
+      className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${cls}`}
+    >
+      {status || "—"}
+    </span>
   );
 };
 

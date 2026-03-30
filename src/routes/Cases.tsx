@@ -3,30 +3,22 @@ import axios from "axios";
 import CaseInformation from "../components/CaseInformation";
 import { useLocation } from "react-router-dom";
 import Loader from "../components/Loader";
-import BASE_URL from "../config"; // Import the base URL
-// Definimos los tipos para los datos que esperamos de la API
+import BASE_URL from "../config";
+
 interface ApiResponse {
   id: number;
   case_id: string;
   case_number: string;
   claim_number: string;
   state: string;
+  final_status: string;
+  status: string;
 }
-
-/*{
-        "casesid": 395098,
-        "case_id": "PDC25-000024",
-        "claim_number": "47849165",
-        "stage": "Pre-Litigation",
-        "type_of_claim": "HO",
-        "state": "FL"
-    },*/
 
 interface NameResponse {
   names: string[];
 }
 
-// Define types for successful and failed responses
 interface SuccessfulResponse {
   data: ApiResponse[];
 }
@@ -50,20 +42,18 @@ const Cases: React.FC = () => {
     return "error" in response;
   };
 
-  // Función que maneja la solicitud a la API
   const fetchData = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // First API call to get names using the email
       const nameResponse = await axios.get<NameResponse>(
         `${BASE_URL}/api/cases?email=${email}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       const names = nameResponse.data;
@@ -73,50 +63,7 @@ const Cases: React.FC = () => {
       }
 
       setData(names);
-
-      //console.log(names);
-
-      /*const requests = names.map((name) => {
-        const url = `${BASE_URL}/api/cases?names=${name}`;
-        return axios
-          .get<ApiResponse[]>(url, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
-          .then((response) => ({
-            data: response.data,
-          }))
-          .catch((error) => {
-            if (axios.isAxiosError(error)) {
-              if (error.response?.status === 404) {
-                // Handle 404 error
-                return { error: "API endpoint not found", name };
-              } else {
-                // Handle other errors
-                return { error: error.message, name };
-              }
-            }
-            return { error: "An unexpected error occurred", name };
-          });
-      });
-      const responses = await Promise.all(requests);
-
-      const successfulResponses = responses.filter(
-        (response): response is SuccessfulResponse =>
-          !isFailedResponse(response)
-      );
-      const allData = successfulResponses.flatMap((response) =>
-        Object.values(response.data)
-      );
-      setData(allData);
-      const failedResponses = responses.filter(isFailedResponse);
-      if (failedResponses.length) {
-        //console.log('hello');
-        //setError(`Failed to fetch data for names: ${failedResponses.map(fr => fr.name).join(', ')}`);
-      }*/
     } catch (error) {
-      //console.error("Error fetching cases:", error);
       setError("Failed to fetch cases.");
     } finally {
       setLoading(false);
@@ -128,48 +75,65 @@ const Cases: React.FC = () => {
   }, []);
 
   return (
-    <div className="cases-list bg-amber-100 flex min-h-screen">
-      <section className="container mx-auto p-6 font-questrial min-h-full">
-        <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5md lg:text-6md dark:text-white">
-          List of{" "}
-          <span className="underline underline-offset-3 decoration-8 decoration-tussock-400 dark:decoration-tussock-600">
-            Cases
-          </span>
-        </h2>
-        {/* <p className="text-md font-normal text-gray-500 lg:text-md dark:text-gray-400 mb-5">All of these cases are with us.</p> */}
-        <div>{error && <p>{error}</p>}</div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl mb-2 text-gray-900 tracking-tight font-questrial">
+            My Cases
+          </h1>
+          <div className="h-1 w-24 bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"></div>
+        </div>
+
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
         {loading ? (
           <Loader />
         ) : (
-          <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg mt-10">
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
-                <thead className="text-xs text-white uppercase bg-tussock-500 dark:text-white">
-                  <tr>
-                    <th scope="col" className="px-6 py-3">
-                      Case ID
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Claim Number
-                    </th>
-                    {/*    <th scope="col" className="px-6 py-3">
-                      Case Status
-                    </th> */}
-                    <th scope="col" className="px-6 py-3">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((item) => (
-                    <CaseInformation key={item.case_id} arepons={item} />
-                  ))}
-                </tbody>
-              </table>
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            {/* Table Header */}
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4">
+              <div className="grid grid-cols-12 gap-4 text-black font-semibold text-sm uppercase tracking-wide">
+                <div className="col-span-2">Case ID</div>
+                <div className="col-span-2">Stage</div>
+                <div className="col-span-2">Claim Number</div>
+                <div className="col-span-2">Status</div>
+                <div className="col-span-4 text-right">Actions</div>
+              </div>
+            </div>
+
+            {/* Table Rows */}
+            <div className="divide-y divide-gray-100">
+              {data.length === 0 ? (
+                <div className="px-6 py-16 text-center text-gray-400">
+                  <svg
+                    className="w-12 h-12 mx-auto mb-3 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <p className="text-sm">No cases found</p>
+                </div>
+              ) : (
+                data.map((item) => (
+                  <CaseInformation key={item.case_id} arepons={item} />
+                ))
+              )}
             </div>
           </div>
         )}
-      </section>
+      </div>
     </div>
   );
 };

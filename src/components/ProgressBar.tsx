@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Check } from "lucide-react";
 
 interface ProgressBarProps {
   steps: string[];
@@ -28,120 +29,87 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
           return prev;
         }
       });
-    }, 300); // Adjust the speed of the animation here
+    }, 300);
 
     return () => clearInterval(interval);
   }, [currentStep]);
 
+  // Width % of the filled progress line
+  const progressPercent =
+    animatedStep <= 0 ? 0 : (animatedStep / (steps.length - 1)) * 100;
+
   return (
-    <React.Fragment>
-      <div className="cp-progressbar w-11/12 lg:w-4/6 mx-auto py-6 mt-5">
-        <div className="h-1 flex items-center justify-between mt-10">
-          {steps.map((step, index) => (
-            <React.Fragment key={index}>
+    <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-100">
+      <div className="relative">
+        {/* Background track */}
+        <div className="absolute top-6 left-0 right-0 h-1 bg-gray-200">
+          {/* Animated fill */}
+          <div
+            className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-500 ease-in-out"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Step nodes */}
+        <div className="relative flex justify-between">
+          {steps.map((step, index) => {
+            const isCompleted = index < animatedStep;
+            const isActive = index === animatedStep;
+            const isPending = index > animatedStep;
+
+            return (
               <div
-                className={`first-line:h-1 flex ${
-                  index < animatedStep
-                    ? "bg-tussock-500"
-                    : index === animatedStep
-                    ? "bg-tussock-500"
-                    : "bg-gray-200"
-                }`}
+                key={index}
+                className="flex flex-col items-center"
+                style={{ flex: 1 }}
               >
-                {index <= animatedStep ? (
-                  <div
-                    className={`w-1/7 h-1 relative flex items-center justify-center transition-all duration-500 ease-in-out ${
-                      index <= animatedStep ? "bg-tussock-500" : "bg-gray-200"
-                    }`}
-                  >
-                    <div
-                      className={`h-6 w-6 rounded-full shadow flex items-center justify-center transition-all duration-500 ease-in-out ${
-                        index <= animatedStep ? "bg-tussock-600" : "bg-white"
-                      }`}
-                    >
-                      {index < animatedStep && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon icon-tabler icon-tabler-check"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="#FFFFFF"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" />
-                          <path d="M5 12l5 5l10 -10" />
-                        </svg>
-                      )}
-                    </div>
-                    {index === animatedStep && (
-                      <React.Fragment>
-                        <div className="absolute top-full mt-4 bg-white shadow-lg px-3 py-2 rounded">
-                          <svg
-                            className="absolute top-0 -mt-1 w-full right-0 left-0"
-                            width="16px"
-                            height="8px"
-                            viewBox="0 0 16 8"
-                            version="1.1"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g
-                              id="Page-1"
-                              stroke="none"
-                              strokeWidth="1"
-                              fill="none"
-                              fillRule="evenodd"
-                            >
-                              <g
-                                id="Progress-Bars"
-                                transform="translate(-322.000000, -198.000000)"
-                                fill="#FFFFFF"
-                              >
-                                <g
-                                  id="Group-4"
-                                  transform="translate(310.000000, 198.000000)"
-                                >
-                                  <polygon
-                                    id="Triangle"
-                                    points="20 0 28 8 12 8"
-                                  ></polygon>
-                                </g>
-                              </g>
-                            </g>
-                          </svg>
-                          <p className="focus:outline-none text-tussock-500 text-xs font-bold">{`${labelStep}`}</p>
-                        </div>
-                        <div className="absolute bg-white h-6 w-6 rounded-full shadow flex items-center justify-center -mr-1/2 ">
-                          <div className="h-3 w-3 bg-tussock-500 rounded-full"></div>
-                        </div>
-                      </React.Fragment>
-                    )}
-                  </div>
-                ) : (
-                  <div className="w-1/7 h-1 relative flex items-center justify-center">
-                    <div
-                      className={`h-6 w-6 rounded-full shadow flex items-center justify-center ${
-                        index <= animatedStep ? "bg-tussock-600" : "bg-white"
-                      }`}
-                    ></div>
-                  </div>
-                )}
-              </div>
-              {index < steps.length - 1 && (
+                {/* Circle */}
                 <div
-                  className={`flex-1 h-1 transition-all duration-500 ease-in-out ${
-                    index < animatedStep ? "bg-tussock-500" : "bg-gray-200"
-                  }`}
-                ></div>
-              )}
-            </React.Fragment>
-          ))}
+                  className={`
+                    w-12 h-12 rounded-full flex items-center justify-center mb-3
+                    shadow-md transition-all duration-500 ease-in-out
+                    ${
+                      isActive
+                        ? "bg-gradient-to-br from-amber-500 to-amber-600 text-white scale-110 ring-4 ring-amber-200"
+                        : ""
+                    }
+                    ${
+                      isCompleted
+                        ? "bg-gradient-to-br from-green-500 to-green-600 text-white"
+                        : ""
+                    }
+                    ${
+                      isPending
+                        ? "bg-white border-2 border-gray-300 text-gray-400"
+                        : ""
+                    }
+                  `}
+                >
+                  {isCompleted ? (
+                    <Check className="w-6 h-6" />
+                  ) : (
+                    <span className="font-semibold text-sm">{index + 1}</span>
+                  )}
+                </div>
+
+                {/* Label */}
+                <div
+                  className={`
+                    text-center text-xs font-medium px-2 py-1 rounded-md max-w-24
+                    ${isActive ? "text-amber-700 bg-amber-100" : ""}
+                    ${isCompleted ? "text-green-700 bg-green-50" : ""}
+                    ${isPending ? "text-gray-500" : ""}
+                  `}
+                >
+                  {step}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
+
 export default ProgressBar;
