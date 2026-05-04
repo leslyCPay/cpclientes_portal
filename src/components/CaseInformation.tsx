@@ -42,17 +42,17 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
 
   // Statuses that show "View Submitted Documents" (blue)
   const isViewDocsStatus =
-    arepons.status === "Presuit - Demand Sent" ||
-    arepons.status === "SETTLED - Awaiting Release" ||
-    arepons.status === "10-Day Demand - Paid Through Client";
+    arepons.status === "Claim to be filed" ||
+    arepons.status === "Pending Ratification" ||
+    arepons.status === "New Case Entered";
 
   // Statuses that show "Confirm Submitted Information" (teal)
   const isConfirmStatus =
-    arepons.status === "SETTLED - Global Awaiting Release";
+    arepons.status === "Welcome Call Done - Pending HO Confirmation";
 
   // Statuses that show the classic View + Docs + Message icons
   const isIconOnlyStatus =
-    arepons.status === "New Case Entered" ||
+    arepons.status === "SETTLED - Awaiting Release" ||
     arepons.status === "Ready for Litigation";
 
   return (
@@ -100,11 +100,11 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
                 arepons.status === "New Case Entered"
                   ? "bg-blue-100 text-blue-800"
                   : arepons.status === "Presuit - Demand Sent"
-                    ? "bg-yellow-100 text-yellow-800"
+                    ? "bg-yellow-100 text-yellow-400"
                     : arepons.status === "SETTLED - Awaiting Release"
-                      ? "bg-purple-100 text-purple-800"
+                      ? "bg-purple-100 text-purple-400"
                       : arepons.status === "10-Day Demand - Paid Through Client"
-                        ? "bg-orange-100 text-orange-800"
+                        ? "bg-orange-100 text-orange-500"
                         : arepons.status === "Ready for Litigation"
                           ? "bg-indigo-100 text-indigo-800"
                           : arepons.status ===
@@ -198,9 +198,10 @@ const CaseInformation: React.FC<{ arepons: Props }> = ({ arepons }) => {
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}
         onConfirm={handleConfirm}
-        documents={arepons.documents ?? []}
+        caseID={arepons.case_id}
         hasConfirmed={hasConfirmed}
         requiresConfirmation={requiresConfirmation}
+        recordID={arepons.id}
       />
     </>
   );

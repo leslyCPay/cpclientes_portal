@@ -7,7 +7,7 @@ import ProgressBar from "../components/ProgressBar";
 import toast, { Toaster } from "react-hot-toast";
 import { HSTabs } from "preline";
 import ErrorBoundary from "../components/ErrorBoundary";
-import ContactPopup from "../components/ContactPopup";
+import ContactHighlight from "../components/ContactHighlight";
 import { Messages } from "../components/Messages";
 import { Home, ChevronRight, Download, Upload } from "lucide-react";
 import {
@@ -137,7 +137,8 @@ const DetailCase: React.FC = () => {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("record_id", recordId || "");
+    formData.append("record_id", recordId || ""); //caseId
+    formData.append("case_id", caseId || "");
 
     try {
       await axios.post(`${BASE_URL}/api/upload-file`, formData, {
@@ -387,37 +388,20 @@ const DetailCase: React.FC = () => {
                     >
                       {caseDetails["attorney"]}
                     </InfoField>
-                    <InfoField label="Legal Assistant">
-                      <ContactPopup
-                        email={
-                          caseDetails["case_manager_email"] || "Not available"
-                        }
-                        phone={
-                          caseDetails["case_manager_phone"] || "Not available"
-                        }
-                      >
-                        <a className="inline-flex items-center gap-1.5 text-blue-700 hover:text-blue-900 cursor-pointer font-medium">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            className="w-4 h-4"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <span className="uppercase text-sm">
-                            {caseDetails["case_manager_name"]}
-                          </span>
-                        </a>
-                      </ContactPopup>
-                    </InfoField>
+
                     <InfoField label="Public Adjuster">
                       {caseDetails["public_adjuster"]}
                     </InfoField>
+
+                    <ContactHighlight
+                      name={caseDetails["case_manager_name"] || "Not assigned"}
+                      email={
+                        caseDetails["case_manager_email"] || "Not available"
+                      }
+                      phone={
+                        caseDetails["case_manager_phone"] || "Not available"
+                      }
+                    />
                   </InfoCard>
 
                   {/* Important Dates */}
